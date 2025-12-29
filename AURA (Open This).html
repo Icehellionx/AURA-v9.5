@@ -995,7 +995,67 @@
     }
     .script-name { flex: 1; font-size: 12px; font-family: monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .script-controls { display: flex; gap: 4px; }
+
+    /* Quill Editor Styles */
+    .quill-editor-container {
+      position: relative;
+    }
+    .ql-toolbar.ql-snow {
+      border: 1px solid var(--border-strong) !important;
+      border-radius: var(--radius-md) var(--radius-md) 0 0 !important;
+      background: var(--bg-elevated) !important;
+      padding: 8px !important;
+    }
+    .ql-container.ql-snow {
+      border: 1px solid var(--border-strong) !important;
+      border-top: none !important;
+      border-radius: 0 0 var(--radius-md) var(--radius-md) !important;
+      background: var(--bg-elevated-2) !important;
+      font-size: 13px !important;
+      min-height: 120px;
+    }
+    .ql-editor {
+      color: var(--text-main) !important;
+      min-height: 120px;
+      padding: 12px 15px !important;
+    }
+    .ql-editor.ql-blank::before {
+      color: var(--text-soft) !important;
+      font-style: normal !important;
+    }
+    .ql-toolbar .ql-stroke {
+      stroke: var(--text-muted) !important;
+    }
+    .ql-toolbar .ql-fill {
+      fill: var(--text-muted) !important;
+    }
+    .ql-toolbar .ql-picker-label {
+      color: var(--text-muted) !important;
+    }
+    .ql-toolbar button:hover .ql-stroke,
+    .ql-toolbar button.ql-active .ql-stroke {
+      stroke: var(--accent) !important;
+    }
+    .ql-toolbar button:hover .ql-fill,
+    .ql-toolbar button.ql-active .ql-fill {
+      fill: var(--accent) !important;
+    }
+    .ql-toolbar button:hover,
+    .ql-toolbar button.ql-active {
+      color: var(--accent) !important;
+    }
+    .ql-snow .ql-picker-options {
+      background: var(--bg-elevated) !important;
+      border: 1px solid var(--border-strong) !important;
+    }
+    .ql-snow .ql-picker-item:hover {
+      color: var(--accent) !important;
+    }
   </style>
+
+  <!-- Quill.js CDN -->
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+  <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 </head>
 
 <body>
@@ -1118,7 +1178,7 @@
 
         <div id="personalityEditor" class="editor-card hidden">
           <div class="section-title">Personality <div style="float:right; display:flex; gap:6px;"><button class="pill-button small" onclick="window.openAiTextEditModal('personalityTextarea')">AI Edit</button><button class="pill-button small" onclick="window.toggleZenMode()">Zen</button></div></div>
-          <textarea id="personalityTextarea" class="form-textarea" style="min-height: 400px;" oninput="localStorage.setItem('aura_global_personality', this.value); window.updateStats('personalityTextarea', 'personalityStats')"></textarea>
+          <div id="personalityTextarea" class="quill-editor-container" style="min-height: 400px;"></div>
           <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
             <button class="pill-button small success" onclick="window.savePersonality()">Save Personality</button>
             <div id="personalityStats" class="form-help" style="margin:0;">0 words / ~0 tokens</div>
@@ -1127,7 +1187,7 @@
 
         <div id="scenarioEditor" class="editor-card hidden">
           <div class="section-title">Scenario <div style="float:right; display:flex; gap:6px;"><button class="pill-button small" onclick="window.openAiTextEditModal('scenarioTextarea')">AI Edit</button><button class="pill-button small" onclick="window.toggleZenMode()">Zen</button></div></div>
-          <textarea id="scenarioTextarea" class="form-textarea" style="min-height: 400px;" oninput="localStorage.setItem('aura_global_scenario', this.value); window.updateStats('scenarioTextarea', 'scenarioStats')"></textarea>
+          <div id="scenarioTextarea" class="quill-editor-container" style="min-height: 400px;"></div>
           <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
             <button class="pill-button small success" onclick="window.saveScenario()">Save Scenario</button>
             <div id="scenarioStats" class="form-help" style="margin:0;">0 words / ~0 tokens</div>
@@ -1136,7 +1196,7 @@
 
         <div id="initialMessageEditor" class="editor-card hidden">
           <div class="section-title">Initial Message <div style="float:right; display:flex; gap:6px;"><button class="pill-button small" onclick="window.openAiTextEditModal('initialMessageTextarea')">AI Edit</button><button class="pill-button small" onclick="window.toggleZenMode()">Zen</button></div></div>
-          <textarea id="initialMessageTextarea" class="form-textarea" style="min-height: 400px;" oninput="localStorage.setItem('aura_global_initial_message', this.value); window.updateStats('initialMessageTextarea', 'initialMessageStats')"></textarea>
+          <div id="initialMessageTextarea" class="quill-editor-container" style="min-height: 400px;"></div>
           <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
             <button class="pill-button small success" onclick="window.saveInitialMessage()">Save Initial Message</button>
             <div id="initialMessageStats" class="form-help" style="margin:0;">0 words / ~0 tokens</div>
@@ -1190,11 +1250,11 @@
         <div class="lab-column">
           <div class="form-group">
             <label class="form-label">Global Personality</label>
-            <textarea id="labPersonality" class="form-textarea" oninput="window.syncFromLab('personality', this.value)"></textarea>
+            <div id="labPersonality" class="quill-editor-container"></div>
           </div>
           <div class="form-group">
             <label class="form-label">Global Scenario</label>
-            <textarea id="labScenario" class="form-textarea" oninput="window.syncFromLab('scenario', this.value)"></textarea>
+            <div id="labScenario" class="quill-editor-container"></div>
           </div>
         </div>
         <div class="lab-column">
@@ -1225,15 +1285,15 @@
         <div class="section-title">Global Context</div>
         <div>
           <div class="form-label">Personality</div>
-          <textarea id="ctxPersonality" class="context-box" placeholder="Global Personality..." oninput="window.syncContext('personality', this.value)"></textarea>
+          <div id="ctxPersonality" class="quill-editor-container context-box"></div>
         </div>
         <div>
           <div class="form-label">Scenario</div>
-          <textarea id="ctxScenario" class="context-box" placeholder="Global Scenario..." oninput="window.syncContext('scenario', this.value)"></textarea>
+          <div id="ctxScenario" class="quill-editor-container context-box"></div>
         </div>
         <div>
           <div class="form-label">Initial Message</div>
-          <textarea id="ctxInitialMessage" class="context-box" placeholder="First message..." oninput="window.syncContext('initialMessage', this.value)"></textarea>
+          <div id="ctxInitialMessage" class="quill-editor-container context-box"></div>
         </div>
 
         <div class="section-title" style="margin-top:10px;">Scripting Debug</div>
@@ -1969,7 +2029,14 @@
       }
 
       window.updateStats = function(inputId, outputId) {
-        var text = document.getElementById(inputId).value || "";
+        var text = "";
+        var quill = window.quillInstances && window.quillInstances[inputId];
+        if (quill) {
+          text = quill.getText() || "";
+        } else {
+          var el = document.getElementById(inputId);
+          text = el ? (el.value || el.innerText || "") : "";
+        }
         var words = text.trim() ? text.trim().split(/\s+/).length : 0;
         var chars = text.length;
         var tokens = Math.ceil(chars / 4); // Rough estimate for LLMs
@@ -2290,8 +2357,8 @@
           lab.classList.remove("hidden");
           btns[3].classList.add("active");
           // Populate lab textareas
-          document.getElementById('labPersonality').value = document.getElementById('personalityTextarea').value;
-          document.getElementById('labScenario').value = document.getElementById('scenarioTextarea').value;
+          window.setQuillText('labPersonality', window.getQuillText('personalityTextarea'));
+          window.setQuillText('labScenario', window.getQuillText('scenarioTextarea'));
           window.renderContextDebug();
         } else if (tab === 'personality') {
           personality.classList.remove("hidden");
@@ -2306,19 +2373,19 @@
       };
 
       window.savePersonality = function () {
-        var text = document.getElementById('personalityTextarea').value;
+        var text = window.getQuillText('personalityTextarea');
         var fileTypes = [{ description: 'Text Files', accept: { 'text/plain': ['.txt'] } }];
         saveTextToFile(text, 'personality.txt', fileTypes);
       }
 
       window.saveScenario = function () {
-        var text = document.getElementById('scenarioTextarea').value;
+        var text = window.getQuillText('scenarioTextarea');
         var fileTypes = [{ description: 'Text Files', accept: { 'text/plain': ['.txt'] } }];
         saveTextToFile(text, 'scenario.txt', fileTypes);
       }
 
       window.saveInitialMessage = function () {
-        var text = document.getElementById('initialMessageTextarea').value;
+        var text = window.getQuillText('initialMessageTextarea');
         var fileTypes = [{ description: 'Text Files', accept: { 'text/plain': ['.txt'] } }];
         saveTextToFile(text, 'initial_message.txt', fileTypes);
       }
@@ -2478,14 +2545,12 @@
       window.toggleContextPanel = function() {
         var p = document.getElementById('contextPanel');
         p.classList.toggle('hidden');
-        
+
         // Refresh content
         if (!p.classList.contains('hidden')) {
-          document.getElementById('ctxPersonality').value = document.getElementById('personalityTextarea').value || "";
-          document.getElementById('ctxScenario').value = document.getElementById('scenarioTextarea').value || "";
-          
-          var initMsg = document.getElementById('initialMessageTextarea').value || "";
-          document.getElementById('ctxInitialMessage').value = initMsg;
+          window.setQuillText('ctxPersonality', window.getQuillText('personalityTextarea'));
+          window.setQuillText('ctxScenario', window.getQuillText('scenarioTextarea'));
+          window.setQuillText('ctxInitialMessage', window.getQuillText('initialMessageTextarea'));
 
           // If graph is visible, resize it
           if (!document.getElementById('graphView').classList.contains('hidden')) {
@@ -2574,15 +2639,15 @@
         chatHistory = [];
         var c1 = document.getElementById('labChatContainer');
         var c2 = document.getElementById('chatContainer');
-        
-        var initEl = document.getElementById('initialMessageTextarea');
-        var initMsg = initEl ? initEl.value.trim() : "";        
+
+        var quill = window.quillInstances && window.quillInstances['initialMessageTextarea'];
+        var initMsg = quill ? quill.getText().trim() : "";
         var html = '<div class="chat-msg system">Simulation started.</div>';
         if (initMsg) {
             chatHistory.push({ role: 'model', content: initMsg });
             html += '<div class="chat-msg ai">' + escHtml(initMsg) + '</div>';
         }
-        
+
         if(c1) c1.innerHTML = html;
         if(c2) c2.innerHTML = html;
       };
@@ -2635,9 +2700,9 @@
         }
         container.scrollTop = container.scrollHeight;
 
-        var globalPers = document.getElementById('labPersonality').value;
-        var globalScen = document.getElementById('labScenario').value;
-        
+        var globalPers = window.getQuillText('labPersonality');
+        var globalScen = window.getQuillText('labScenario');
+
         // 0. Run Active Scripts (PULSE, etc.)
         var scriptInjections = [];
         var mockContext = {
@@ -3189,11 +3254,11 @@
         var reader = new FileReader();
         reader.onload = function (ev) {
           var val = ev.target.result;
-          document.getElementById('personalityTextarea').value = val;
+          window.setQuillText('personalityTextarea', val);
           localStorage.setItem('aura_global_personality', val);
           window.updateStats('personalityTextarea', 'personalityStats');
-          if(document.getElementById('labPersonality')) document.getElementById('labPersonality').value = val;
-          if(document.getElementById('ctxPersonality')) document.getElementById('ctxPersonality').value = val;
+          window.setQuillText('labPersonality', val);
+          window.setQuillText('ctxPersonality', val);
         };
         reader.readAsText(file);
       };
@@ -3204,11 +3269,11 @@
         var reader = new FileReader();
         reader.onload = function (ev) {
           var val = ev.target.result;
-          document.getElementById('scenarioTextarea').value = val;
+          window.setQuillText('scenarioTextarea', val);
           localStorage.setItem('aura_global_scenario', val);
           window.updateStats('scenarioTextarea', 'scenarioStats');
-          if(document.getElementById('labScenario')) document.getElementById('labScenario').value = val;
-          if(document.getElementById('ctxScenario')) document.getElementById('ctxScenario').value = val;
+          window.setQuillText('labScenario', val);
+          window.setQuillText('ctxScenario', val);
         };
         reader.readAsText(file);
       };
@@ -3219,9 +3284,9 @@
         var reader = new FileReader();
         reader.onload = function (ev) {
           var val = ev.target.result;
-          document.getElementById('initialMessageTextarea').value = val;
+          window.setQuillText('initialMessageTextarea', val);
           localStorage.setItem('aura_global_initial_message', val);
-          if(document.getElementById('ctxInitialMessage')) document.getElementById('ctxInitialMessage').value = val;
+          window.setQuillText('ctxInitialMessage', val);
           window.updateStats('initialMessageTextarea', 'initialMessageStats');
           window.clearChat(); // Reset chat with new initial message
         };
@@ -3726,19 +3791,20 @@
                     var val = txt.substring(startQuote + 1, end);
                     var el = document.getElementById(elementId);
                     if (el) {
-                        if (op === '+=' && el.value) el.value += val;
-                        else el.value = val;
-                        if (storageKey) localStorage.setItem(storageKey, el.value);
+                        var currentVal = window.getQuillText(elementId);
+                        var newVal = (op === '+=' && currentVal) ? currentVal + val : val;
+                        window.setQuillText(elementId, newVal);
+                        if (storageKey) localStorage.setItem(storageKey, newVal);
                         el.dispatchEvent(new Event('input'));
-                        
+
                         if (varName === 'personality') {
-                           if(document.getElementById('labPersonality')) document.getElementById('labPersonality').value = el.value;
-                           if(document.getElementById('ctxPersonality')) document.getElementById('ctxPersonality').value = el.value;
+                           window.setQuillText('labPersonality', newVal);
+                           window.setQuillText('ctxPersonality', newVal);
                         } else if (varName === 'scenario') {
-                           if(document.getElementById('labScenario')) document.getElementById('labScenario').value = el.value;
-                           if(document.getElementById('ctxScenario')) document.getElementById('ctxScenario').value = el.value;                           
+                           window.setQuillText('labScenario', newVal);
+                           window.setQuillText('ctxScenario', newVal);
                         } else if (varName === 'initialMessage' || varName === 'initial') {
-                           if(document.getElementById('ctxInitialMessage')) document.getElementById('ctxInitialMessage').value = el.value;
+                           window.setQuillText('ctxInitialMessage', newVal);
                         }
                     }
                  }
@@ -5440,7 +5506,7 @@ window._finalizeSmartTag = function(input, context, field, keepFocus) {
         (window.ModalManager&&window.ModalManager.open?window.ModalManager.open(document.getElementById('aiModal')):document.getElementById('aiModal').classList.remove('hidden'));
         var targetElement = document.getElementById(targetId);
         if (targetElement) {
-          document.getElementById('aiPrompt').value = targetElement.value;
+          document.getElementById('aiPrompt').value = window.getQuillText(targetId) || targetElement.value || '';
         }
         document.getElementById('aiPrompt').readOnly = true;
         document.getElementById('aiResult').value = "Generating...";
@@ -5554,7 +5620,12 @@ window._finalizeSmartTag = function(input, context, field, keepFocus) {
         if (aiTargetField) {
           var targetElement = document.getElementById(aiTargetField);
           if (targetElement) {
-            targetElement.value = result;
+            // Try to set as Quill content, fallback to regular textarea
+            if (window.quillInstances && window.quillInstances[aiTargetField]) {
+              window.setQuillText(aiTargetField, result);
+            } else {
+              targetElement.value = result;
+            }
             // Dispatch input event so the specific oninput handler (which handles CSV splitting, saving, etc.) runs automatically
             targetElement.dispatchEvent(new Event('input'));
           }
@@ -5681,12 +5752,12 @@ window._finalizeSmartTag = function(input, context, field, keepFocus) {
           return;
         }
 
-        var personalityContext = document.getElementById('personalityTextarea').value;
-        var scenarioContext = document.getElementById('scenarioTextarea').value;
+        var personalityContext = window.getQuillText('personalityTextarea');
+        var scenarioContext = window.getQuillText('scenarioTextarea');
         var fullPrompt = "";
 
         if (aiGenerationMode === 'edit_text') {
-            var originalText = document.getElementById(aiTargetField).value;
+            var originalText = window.getQuillText(aiTargetField);
             fullPrompt = "You are an expert editor. Refine the following text based on the user's instruction. Return only the refined text, without any extra commentary.\n\nORIGINAL TEXT:\n```\n" + originalText + "\n```\n\nINSTRUCTION:\n" + userPrompt + "\n\nREFINED TEXT:";
         } else {
             fullPrompt = "Personality Context:\n" + personalityContext + "\n\nScenario Context:\n" + scenarioContext + "\n\nPrompt:\n" + userPrompt;
@@ -6451,22 +6522,130 @@ window._finalizeSmartTag = function(input, context, field, keepFocus) {
         // Initialize API key selector and load active key
         window.refreshApiKeySelector();
         window.switchApiKey();
-        
+
+        // --------------------------------------------------------------------------
+        // Quill Editor Initialization
+        // --------------------------------------------------------------------------
+        window.quillInstances = {};
+
+        // Quill configuration
+        var quillToolbarOptions = [
+          [{ 'header': [1, 2, 3, false] }],
+          ['bold', 'italic', 'underline', 'strike'],
+          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+          ['blockquote', 'code-block'],
+          [{ 'color': [] }, { 'background': [] }],
+          ['link'],
+          ['clean']
+        ];
+
+        // Helper function to initialize a Quill editor
+        window.initQuillEditor = function(elementId, placeholder, onChangeCallback) {
+          var element = document.getElementById(elementId);
+          if (!element || window.quillInstances[elementId]) return window.quillInstances[elementId];
+
+          var quill = new Quill('#' + elementId, {
+            theme: 'snow',
+            placeholder: placeholder || 'Enter text...',
+            modules: {
+              toolbar: quillToolbarOptions
+            }
+          });
+
+          if (onChangeCallback) {
+            quill.on('text-change', function() {
+              onChangeCallback(quill);
+            });
+          }
+
+          window.quillInstances[elementId] = quill;
+          return quill;
+        };
+
+        // Helper to get text content from Quill editor
+        window.getQuillText = function(elementId) {
+          var quill = window.quillInstances[elementId];
+          if (quill) {
+            return quill.root.innerHTML;
+          }
+          var el = document.getElementById(elementId);
+          return el ? (el.value || '') : '';
+        };
+
+        // Helper to set text content in Quill editor
+        window.setQuillText = function(elementId, content) {
+          var quill = window.quillInstances[elementId];
+          if (quill) {
+            quill.root.innerHTML = content || '';
+          } else {
+            var el = document.getElementById(elementId);
+            if (el) {
+              if (el.tagName === 'TEXTAREA') {
+                el.value = content || '';
+              } else {
+                el.innerHTML = content || '';
+              }
+            }
+          }
+        };
+
+        // Initialize main editors with localStorage sync and stats
+        window.quillInstances.personalityTextarea = window.initQuillEditor('personalityTextarea', 'Enter personality details...', function(quill) {
+          var html = quill.root.innerHTML;
+          localStorage.setItem('aura_global_personality', html);
+          window.updateStats('personalityTextarea', 'personalityStats');
+        });
+
+        window.quillInstances.scenarioTextarea = window.initQuillEditor('scenarioTextarea', 'Enter scenario details...', function(quill) {
+          var html = quill.root.innerHTML;
+          localStorage.setItem('aura_global_scenario', html);
+          window.updateStats('scenarioTextarea', 'scenarioStats');
+        });
+
+        window.quillInstances.initialMessageTextarea = window.initQuillEditor('initialMessageTextarea', 'Enter initial message...', function(quill) {
+          var html = quill.root.innerHTML;
+          localStorage.setItem('aura_global_initial_message', html);
+          window.updateStats('initialMessageTextarea', 'initialMessageStats');
+        });
+
+        // Initialize laboratory editors
+        window.quillInstances.labPersonality = window.initQuillEditor('labPersonality', 'Global Personality...', function(quill) {
+          window.syncFromLab('personality', quill.root.innerHTML);
+        });
+
+        window.quillInstances.labScenario = window.initQuillEditor('labScenario', 'Global Scenario...', function(quill) {
+          window.syncFromLab('scenario', quill.root.innerHTML);
+        });
+
+        // Initialize context panel editors
+        window.quillInstances.ctxPersonality = window.initQuillEditor('ctxPersonality', 'Global Personality...', function(quill) {
+          window.syncContext('personality', quill.root.innerHTML);
+        });
+
+        window.quillInstances.ctxScenario = window.initQuillEditor('ctxScenario', 'Global Scenario...', function(quill) {
+          window.syncContext('scenario', quill.root.innerHTML);
+        });
+
+        window.quillInstances.ctxInitialMessage = window.initQuillEditor('ctxInitialMessage', 'First message...', function(quill) {
+          window.syncContext('initialMessage', quill.root.innerHTML);
+        });
+
+        // Load saved values from localStorage
         var savedPers = localStorage.getItem('aura_global_personality');
         if (savedPers) {
-          document.getElementById('personalityTextarea').value = savedPers;
+          window.setQuillText('personalityTextarea', savedPers);
           window.updateStats('personalityTextarea', 'personalityStats');
         }
         var savedScen = localStorage.getItem('aura_global_scenario');
         if (savedScen) {
-          document.getElementById('scenarioTextarea').value = savedScen;
+          window.setQuillText('scenarioTextarea', savedScen);
           window.updateStats('scenarioTextarea', 'scenarioStats');
         }
-        
+
         var savedInit = localStorage.getItem('aura_global_initial_message') || "";
         if (savedInit) {
-            document.getElementById('initialMessageTextarea').value = savedInit;
-            window.updateStats('initialMessageTextarea', 'initialMessageStats');
+          window.setQuillText('initialMessageTextarea', savedInit);
+          window.updateStats('initialMessageTextarea', 'initialMessageStats');
         }
 
         // Auto-load saved data
