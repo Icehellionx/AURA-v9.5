@@ -14878,6 +14878,10 @@ module.exports = __webpack_require__(63);
 
         STATE.shiftId = shiftId || null;
         try{ saveUiState({ entryId: STATE.entryId, shiftId: STATE.shiftId }); }catch(_e0){}
+
+        // Auto-switch to visual tab when entry is selected
+        window.switchTab('visual');
+
         renderList(true);
         renderEditor();
         renderCode();
@@ -14944,6 +14948,9 @@ module.exports = __webpack_require__(63);
         STATE.selectedIds = [newId];
         STATE.lastSelectedId = newId;
 
+        // Auto-switch to visual tab when creating new entry
+        window.switchTab('visual');
+
         renderList(true);
         renderEditor();
         renderCode();
@@ -14963,6 +14970,10 @@ module.exports = __webpack_require__(63);
         STATE.shiftId = null;
         STATE.selectedIds = [clone.id];
         STATE.lastSelectedId = clone.id;
+
+        // Auto-switch to visual tab when duplicating entry
+        window.switchTab('visual');
+
         renderList(true);
         renderEditor();
         renderCode();
