@@ -18480,6 +18480,18 @@ window._finalizeSmartTag = function(input, context, field, keepFocus) {
       var gCam = { x: 0, y: 0, z: 1 };
       var gDrag = { active: false, node: null, startX: 0, startY: 0, camX: 0, camY: 0, hasMoved: false };
 
+      // Physics stability tracking and progressive fallback system
+      var gPhysics = {
+        energy: 0,              // Current kinetic energy
+        energyHistory: [],      // Track energy over last N frames
+        historySize: 60,        // Track last 60 frames
+        stableThreshold: 0.5,   // Energy change threshold for stability
+        unstableFrames: 0,      // Count of consecutive unstable frames
+        fallbackLevel: 0,       // 0=normal, 1=curved lines, 2=allow crossing
+        curvedLinesThreshold: 180,   // Enable curved lines after 180 unstable frames (3 sec)
+        lineCrossingThreshold: 360   // Enable crossing after 360 unstable frames (6 sec)
+      };
+
       window.resetGraphCamera = function() {
         var cvs = document.getElementById('graphCanvas');
         if (cvs) {
@@ -18743,6 +18755,12 @@ window._finalizeSmartTag = function(input, context, field, keepFocus) {
         gCam.x = cvs.width / 2;
         gCam.y = cvs.height / 2;
 
+        // Reset physics stability tracking for new graph
+        gPhysics.energy = 0;
+        gPhysics.energyHistory = [];
+        gPhysics.unstableFrames = 0;
+        gPhysics.fallbackLevel = 0;
+
         // Start Loop
         if (gAnim) cancelAnimationFrame(gAnim);
         gAnim = requestAnimationFrame(gTick);
@@ -18852,6 +18870,58 @@ window._finalizeSmartTag = function(input, context, field, keepFocus) {
       function gTick() {
         var searchTerm = document.getElementById('gSearchNode') ? document.getElementById('gSearchNode').value.toLowerCase().trim() : "";
 
+        // Calculate total kinetic energy for stability tracking
+        var totalEnergy = 0;
+        gNodes.forEach(function(n) {
+          totalEnergy += (n.vx * n.vx + n.vy * n.vy);
+        });
+
+        // Update energy history
+        gPhysics.energyHistory.push(totalEnergy);
+        if (gPhysics.energyHistory.length > gPhysics.historySize) {
+          gPhysics.energyHistory.shift();
+        }
+
+        // Check stability: if energy isn't decreasing significantly, it's unstable
+        if (gPhysics.energyHistory.length >= gPhysics.historySize) {
+          var avgOld = 0, avgNew = 0;
+          var halfSize = Math.floor(gPhysics.historySize / 2);
+          for (var i = 0; i < halfSize; i++) {
+            avgOld += gPhysics.energyHistory[i];
+            avgNew += gPhysics.energyHistory[halfSize + i];
+          }
+          avgOld /= halfSize;
+          avgNew /= halfSize;
+
+          var energyChange = (avgOld - avgNew) / (avgOld + 1);
+
+          // If energy isn't decreasing significantly, increment unstable counter
+          if (Math.abs(energyChange) < gPhysics.stableThreshold || avgNew > avgOld) {
+            gPhysics.unstableFrames++;
+          } else {
+            gPhysics.unstableFrames = Math.max(0, gPhysics.unstableFrames - 2); // Decay faster when stable
+          }
+
+          // Update fallback level based on unstable frames
+          if (gPhysics.unstableFrames >= gPhysics.lineCrossingThreshold) {
+            gPhysics.fallbackLevel = 2; // Allow line crossing
+          } else if (gPhysics.unstableFrames >= gPhysics.curvedLinesThreshold) {
+            gPhysics.fallbackLevel = 1; // Use curved lines
+          } else if (gPhysics.unstableFrames < gPhysics.curvedLinesThreshold / 2) {
+            gPhysics.fallbackLevel = 0; // Normal
+          }
+        }
+
+        // Determine repulsion multiplier based on fallback level
+        var repulsionMult = GRAPH_REPULSION_MULTIPLIER;
+        if (gPhysics.fallbackLevel === 2) {
+          // Reduce repulsion to allow crossing
+          repulsionMult *= 0.3;
+        } else if (gPhysics.fallbackLevel === 1) {
+          // Slightly reduce repulsion for curved lines
+          repulsionMult *= 0.7;
+        }
+
         // Repulsion forces between nodes
         for (var i=0; i<gNodes.length; i++) {
           var a = gNodes[i];
@@ -18860,7 +18930,7 @@ window._finalizeSmartTag = function(input, context, field, keepFocus) {
             var dx = b.x - a.x, dy = b.y - a.y;
             var d2 = dx*dx + dy*dy + 0.1;
             var d = Math.sqrt(d2);
-            var f = (GRAPH_REPULSION_FORCE / d2) * GRAPH_REPULSION_MULTIPLIER;
+            var f = (GRAPH_REPULSION_FORCE / d2) * repulsionMult;
             var fx = (dx/d) * f, fy = (dy/d) * f;
             a.vx -= fx; a.vy -= fy;
             b.vx += fx; b.vy += fy;
@@ -18912,7 +18982,31 @@ window._finalizeSmartTag = function(input, context, field, keepFocus) {
           }
 
           gCtx.globalAlpha = dim ? 0.05 : (l.style === 'dashed' ? 0.6 : 1);
-          gCtx.beginPath(); gCtx.moveTo(l.s.x, l.s.y); gCtx.lineTo(l.t.x, l.t.y); gCtx.stroke();
+          gCtx.beginPath();
+          gCtx.moveTo(l.s.x, l.s.y);
+
+          // Use curved lines when fallback level >= 1 (unstable graph)
+          if (gPhysics.fallbackLevel >= 1) {
+            // Calculate control point for quadratic curve
+            // Place control point perpendicular to the line, creating an arc
+            var dx = l.t.x - l.s.x;
+            var dy = l.t.y - l.s.y;
+            var mx = (l.s.x + l.t.x) / 2;
+            var my = (l.s.y + l.t.y) / 2;
+
+            // Perpendicular offset (rotate 90 degrees)
+            var dist = Math.sqrt(dx * dx + dy * dy);
+            var offset = Math.min(dist * 0.2, 30); // Curve intensity
+            var cpx = mx - dy / dist * offset;
+            var cpy = my + dx / dist * offset;
+
+            gCtx.quadraticCurveTo(cpx, cpy, l.t.x, l.t.y);
+          } else {
+            // Normal straight line
+            gCtx.lineTo(l.t.x, l.t.y);
+          }
+
+          gCtx.stroke();
           gCtx.globalAlpha = 1;
         });
         gCtx.setLineDash([]); // Reset line dash
@@ -18925,6 +19019,23 @@ window._finalizeSmartTag = function(input, context, field, keepFocus) {
           gCtx.globalAlpha = 1;
         });
         gCtx.restore();
+
+        // Draw physics fallback mode indicator
+        if (gPhysics.fallbackLevel > 0) {
+          gCtx.save();
+          gCtx.font = '11px sans-serif';
+          gCtx.textAlign = 'left';
+          gCtx.fillStyle = 'rgba(255, 165, 0, 0.8)';
+          var statusText = '';
+          if (gPhysics.fallbackLevel === 1) {
+            statusText = '⚠ Complex Graph: Using Curved Lines';
+          } else if (gPhysics.fallbackLevel === 2) {
+            statusText = '⚠ Very Complex: Allowing Line Crossing';
+          }
+          gCtx.fillText(statusText, 10, cvs.height - 10);
+          gCtx.restore();
+        }
+
         gAnim = requestAnimationFrame(gTick);
       }
 
