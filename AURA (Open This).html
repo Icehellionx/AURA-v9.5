@@ -18198,7 +18198,13 @@ window._finalizeSmartTag = function(input, context, field, keepFocus) {
             var originalText = window.getQuillText(aiTargetField);
             fullPrompt = "You are an expert editor. Refine the following text based on the user's instruction. Return only the refined text, without any extra commentary.\n\nORIGINAL TEXT:\n```\n" + originalText + "\n```\n\nINSTRUCTION:\n" + userPrompt + "\n\nREFINED TEXT:";
         } else {
-            fullPrompt = "Personality Context:\n" + personalityContext + "\n\nScenario Context:\n" + scenarioContext + "\n\nPrompt:\n" + userPrompt;
+            // Master context: Explain lorebook purpose for all entry/shift generation
+            var lorebookContext = "";
+            if (aiGenerationMode === 'entry' || aiGenerationMode === 'shift' || aiGenerationMode === 'edit_entry') {
+              lorebookContext = "CONTEXT: You are creating lorebook entries for an AI storytelling system. These entries will be dynamically injected into another LLM's context when specific conditions are met (keywords, tags, emotional states, etc.). The entries should provide concise, relevant information that enhances the LLM's understanding without being overly prescriptive.\n\n";
+            }
+
+            fullPrompt = lorebookContext + "Personality Context:\n" + personalityContext + "\n\nScenario Context:\n" + scenarioContext + "\n\nPrompt:\n" + userPrompt;
 
             if (aiGenerationMode === 'edit_entry') {
           // Check if multiple entries are selected
@@ -18229,8 +18235,7 @@ window._finalizeSmartTag = function(input, context, field, keepFocus) {
             var availableChars = STATE.data.characters.map(function(c){return c.key}).filter(Boolean);
             fullPrompt += "\n\nGenerate a single JSON object (or an array of objects) for RELATIONSHIP PAIR entries. Do not include ```json markdown.\n\nRequirements:\n1. 'pair': array of 2 character keys. MUST use keys from this list: " + JSON.stringify(availableChars) + ".\n2. 'requireTags': array of strings.\n3. 'injection': concise string (max 50 words).\n4. 'group': optional string.";
           } else {
-            fullPrompt += "\n\nGenerate a single JSON object (or an array of objects) for DYNAMIC_LORE " + (aiGenerationMode === 'shift' ? "shift" : "entry") + ". The JSON should be compatible with the AURA lorebook format. Do not include ```json markdown.\n\nRequirements:\n1. Set 'priority' to a number between 1 and 10.\n2. CRITICAL: You MUST include emotion gates based on the mood. Use 'andAnyEmotion' (require) or 'notAnyEmotion' (block). Valid emotions: ANGER, JOY, SADNESS, FEAR, ROMANCE, NEUTRAL.\n3. CRITICAL: You MUST include intent gates if applicable. Use 'andAnyIntent' (require) or 'notAnyIntent' (block). Valid intents: question, disclosure, command, promise, conflict, smalltalk, meta, narrative.\n4. CRITICAL: You MUST include eros gates if applicable. Use 'andAnyEros' (require) or 'notAnyEros' (block). Valid eros intensities: platonic, tension, romance, physical, passion, explicit, conflict, aftercare.\n5. Include 'id_name', 'keywords' (array).\n6. 'personality' and 'scenario' fields MUST be concise (max 20 words each).";
-            fullPrompt += "\n\nNote: You can also use 'andAnyLongTermEmotion' or 'andAnyLongTermEros' for persistent states.";
+            fullPrompt += "\n\nGenerate a single JSON object (or an array of objects) for DYNAMIC_LORE " + (aiGenerationMode === 'shift' ? "shift" : "entry") + ". The JSON should be compatible with the AURA lorebook format. Do not include ```json markdown.\n\nRequirements:\n1. Set 'priority' to a number between 1 and 10.\n2. Include 'id_name' and 'keywords' (array of trigger phrases).\n3. 'personality' and 'scenario' fields MUST be concise (max 20 words each).\n\nGating Philosophy - USE SIMPLEST LOGICAL GATES:\n• Only add gates when they are ESSENTIAL to the entry's purpose\n• Prefer NO gates over excessive/illogical gates\n• Use 1-2 gates maximum unless truly necessary\n• Available gate types:\n  - Emotion gates: 'andAnyEmotion' or 'notAnyEmotion' (ANGER, JOY, SADNESS, FEAR, ROMANCE, NEUTRAL)\n  - Intent gates: 'andAnyIntent' or 'notAnyIntent' (question, disclosure, command, promise, conflict, smalltalk, meta, narrative)\n  - Eros gates: 'andAnyEros' or 'notAnyEros' (platonic, tension, romance, physical, passion, explicit, conflict, aftercare)\n  - Long-term variants: 'andAnyLongTermEmotion', 'andAnyLongTermEros'\n\nExamples of good gating:\n• Romantic confession dialogue → 'andAnyEmotion': ['ROMANCE']\n• Combat reaction → 'andAnyEmotion': ['ANGER', 'FEAR']\n• Generic flavor text → NO gates needed\n• Question-specific response → 'andAnyIntent': ['question']";
           }
         }
         }
