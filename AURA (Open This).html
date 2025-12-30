@@ -4,7 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AURA v8.0 OMEGA Data Manager</title>
+  <title>AURA Data Manager</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%234f46e5'/><text x='50' y='70' font-size='60' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'>A</text></svg>">
   <style>
     :root {
       --bg: #050816;
@@ -72,7 +73,7 @@
     }
 
     .sidebar-title {
-      font-size: 13px;
+      font-size: 15px;
       font-weight: 600;
       letter-spacing: 0.04em;
       color: var(--text-muted);
@@ -91,8 +92,8 @@
 
     .data-type-btn {
       flex: 1;
-      padding: 6px 8px;
-      font-size: 10px;
+      padding: 8px 10px;
+      font-size: 12px;
       font-weight: 600;
       border: none;
       background: transparent;
@@ -158,13 +159,13 @@
     }
 
     .entry-item-title {
-      font-size: 12px;
+      font-size: 14px;
       font-weight: 600;
       margin-bottom: 2px;
     }
 
     .entry-item-subtitle {
-      font-size: 10px;
+      font-size: 12px;
       color: var(--text-soft);
     }
 
@@ -196,7 +197,7 @@
     }
 
     .button-group-label {
-      font-size: 9px;
+      font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       color: var(--text-soft);
@@ -231,8 +232,8 @@
       border: 1px solid var(--border-subtle);
       background: radial-gradient(circle at top left, rgba(148, 163, 184, 0.45), rgba(15, 23, 42, 0.95));
       color: #f9fafb;
-      font-size: 12px;
-      padding: 6px 12px;
+      font-size: 13px;
+      padding: 7px 14px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -248,8 +249,8 @@
     }
 
     .pill-button.small {
-      font-size: 11px;
-      padding: 4px 10px;
+      font-size: 12px;
+      padding: 5px 11px;
     }
 
     .pill-button.danger {
@@ -290,7 +291,7 @@
     }
 
     .brand-title {
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 700;
       letter-spacing: 0.02em;
       background: linear-gradient(135deg, #e0e7ff 0%, #a5b4fc 100%);
@@ -300,7 +301,7 @@
     }
 
     .brand-subtitle {
-      font-size: 11px;
+      font-size: 13px;
       color: var(--text-soft);
     }
 
@@ -314,8 +315,8 @@
     }
 
     .tab-button {
-      padding: 6px 16px;
-      font-size: 12px;
+      padding: 8px 18px;
+      font-size: 13px;
       font-weight: 600;
       border: none;
       background: transparent;
@@ -357,7 +358,7 @@
     }
 
     .section-title {
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 600;
       letter-spacing: 0.02em;
       color: var(--text-main);
@@ -372,7 +373,7 @@
 
     .form-label {
       display: block;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 600;
       color: var(--text-muted);
       margin-bottom: 6px;
@@ -381,7 +382,7 @@
     }
 
     .form-help {
-      font-size: 11px;
+      font-size: 12px;
       color: var(--text-soft);
       margin-top: 4px;
     }
@@ -390,12 +391,12 @@
     .form-select,
     .form-textarea {
       width: 100%;
-      padding: 10px 12px;
+      padding: 11px 13px;
       background: rgba(15, 23, 42, 0.95);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
       color: var(--text-main);
-      font-size: 13px;
+      font-size: 14px;
       font-family: inherit;
       outline: none;
       transition: all 0.2s;
@@ -430,12 +431,12 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 12px;
+      padding: 7px 13px;
       border-radius: var(--radius-pill);
       border: 1px solid var(--border-subtle);
       background: rgba(15, 23, 42, 0.9);
       cursor: pointer;
-      font-size: 12px;
+      font-size: 13px;
       transition: all 0.2s;
     }
 
@@ -756,6 +757,9 @@
     /* Tutorial System */
     .tutorial-tooltip {
       position: fixed;
+      top: 100px;
+      left: 50%;
+      transform: translateX(-50%);
       background: var(--bg-elevated);
       border: 1px solid var(--accent);
       padding: 20px;
@@ -13645,14 +13649,14 @@ module.exports = __webpack_require__(63);
               <div class="code-title">Current Entry JSON</div>
               <button class="pill-button small" onclick="window.syncFromJson()">← Sync</button>
             </div>
-            <textarea class="code-textarea" id="entryJsonCode"></textarea>
+            <textarea class="code-textarea" id="entryJsonCode" spellcheck="false"></textarea>
           </div>
           <div class="code-panel">
             <div class="code-header">
               <div class="code-title">Full Export</div>
               <button class="pill-button small" onclick="window.copyCode()">Copy</button>
             </div>
-            <textarea class="code-textarea" id="fullExportCode" readonly></textarea>
+            <textarea class="code-textarea" id="fullExportCode" spellcheck="false" readonly></textarea>
           </div>
         </div>
 
@@ -13819,11 +13823,11 @@ module.exports = __webpack_require__(63);
       </div>
       <div class="form-group">
         <label class="form-label">Prompt</label>
-        <textarea id="aiPrompt" class="form-textarea" style="min-height: 120px;"></textarea>
+        <textarea id="aiPrompt" class="form-textarea" style="min-height: 120px;" spellcheck="false"></textarea>
       </div>
       <div class="form-group">
         <label class="form-label">Generated Text</label>
-        <textarea id="aiResult" class="form-textarea" style="min-height: 150px;" readonly></textarea>
+        <textarea id="aiResult" class="form-textarea" style="min-height: 150px;" spellcheck="false" readonly></textarea>
       </div>
       <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
         <button type="button" class="pill-button success" onclick="window.generateAiText()">Generate</button>
@@ -16584,7 +16588,7 @@ module.exports = __webpack_require__(63);
           "</div>" +
           '<div class="form-group">' +
           '<label class="form-label" style="display:flex;justify-content:space-between;align-items:center;">Base Personality <button class="pill-button small" onclick="window.openAiModal(\'char-personality-' + e.id + '\')">AI</button></label>' +
-          '<textarea id="char-personality-' + e.id + '" class="form-textarea" style="min-height:120px;" oninput="save({personality:this.value})">' + escHtml(e.personality || "") + "</textarea>" +
+          '<textarea id="char-personality-' + e.id + '" class="form-textarea" style="min-height:120px;" spellcheck="false" oninput="save({personality:this.value})">' + escHtml(e.personality || "") + "</textarea>" +
           "</div>" +
           "</div>";
       }
@@ -16632,7 +16636,7 @@ module.exports = __webpack_require__(63);
           "</div>" +
           '<div class="form-group">' +
           '<label class="form-label" style="display:flex;justify-content:space-between;align-items:center;">Injection <button class="pill-button small" onclick="window.openAiModal(\'pair-injection-' + e.id + '\')">AI</button></label>' +
-          '<textarea id="pair-injection-' + e.id + '" class="form-textarea" style="min-height:140px;" oninput="save({injection:this.value})">' + escHtml(e.injection || "") + "</textarea>" +
+          '<textarea id="pair-injection-' + e.id + '" class="form-textarea" style="min-height:140px;" spellcheck="false" oninput="save({injection:this.value})">' + escHtml(e.injection || "") + "</textarea>" +
           "</div>" +
           "</div>";
       }
@@ -16709,20 +16713,20 @@ module.exports = __webpack_require__(63);
 
           '<div id="sec_personality" class="form-section">' +
           '<div class="section-title" onclick="this.parentNode.classList.toggle(\'collapsed\')">Personality <button id="btn_ai_pers" class="pill-button small" onclick="event.stopPropagation();window.openAiModal(\'lore-personality-' + e.id + '\')">AI</button></div>' +
-          '<textarea id="lore-personality-' + e.id + '" class="form-textarea" style="min-height:120px;" oninput="save({personality:this.value})">' + escHtml(e.personality || "") + "</textarea>" +
+          '<textarea id="lore-personality-' + e.id + '" class="form-textarea" style="min-height:120px;" spellcheck="false" oninput="save({personality:this.value})">' + escHtml(e.personality || "") + "</textarea>" +
           '<div style="margin-top:8px;"><label class="form-label" style="font-size:10px;">Remove Text (Optional)</label><textarea class="form-textarea" style="min-height:60px;font-size:11px;" oninput="save({remove_personality:this.value})">' + escHtml(e.remove_personality || "") + '</textarea></div>' +
           "</div>" +
 
           '<div id="sec_scenario" class="form-section">' +
           '<div class="section-title" onclick="this.parentNode.classList.toggle(\'collapsed\')">Scenario <button class="pill-button small" onclick="event.stopPropagation();window.openAiModal(\'lore-scenario-' + e.id + '\')">AI</button></div>' +
-          '<textarea id="lore-scenario-' + e.id + '" class="form-textarea" style="min-height:140px;" oninput="save({scenario:this.value})">' + escHtml(e.scenario || "") + "</textarea>" +
+          '<textarea id="lore-scenario-' + e.id + '" class="form-textarea" style="min-height:140px;" spellcheck="false" oninput="save({scenario:this.value})">' + escHtml(e.scenario || "") + "</textarea>" +
           '<div style="margin-top:8px;"><label class="form-label" style="font-size:10px;">Remove Text (Optional)</label><textarea class="form-textarea" style="min-height:60px;font-size:11px;" oninput="save({remove_scenario:this.value})">' + escHtml(e.remove_scenario || "") + '</textarea></div>' +
           "</div>" +
 
           '<div id="sec_tag_gates" class="form-section">' +
           '<div class="section-title" onclick="this.parentNode.classList.toggle(\'collapsed\')">Tag Gates</div>' +
-          gateTextarea("andAll", "andAll (require ALL tags)", e.andAll) +
-          gateTextarea("notAll", "notAll (block if ALL tags present)", e.notAll) +
+          gateTextarea("andAll", "And All (require ALL tags)", e.andAll) +
+          gateTextarea("notAll", "Not All (block if ALL tags present)", e.notAll) +
           '<div class="form-help">Note: <strong>block</strong> above acts as notAny (block if ANY present).</div>' +
           "</div>" +
 
@@ -16731,16 +16735,16 @@ module.exports = __webpack_require__(63);
           '<div class="form-grid" style="align-items:start">' +
           '<div>' +
           '<div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;">Current Mood</div>' +
-          emotionGatePicker("andAnyEmotion", "andAnyEmotion (require ANY)", e.andAnyEmotion) +
-          emotionGatePicker("andAllEmotion", "andAllEmotion (require ALL)", e.andAllEmotion) +
-          emotionGatePicker("notAnyEmotion", "notAnyEmotion (block if ANY)", e.notAnyEmotion) +
-          emotionGatePicker("notAllEmotion", "notAllEmotion (block if ALL)", e.notAllEmotion) +
+          emotionGatePicker("andAnyEmotion", "And Any Emotion (require ANY)", e.andAnyEmotion) +
+          emotionGatePicker("andAllEmotion", "And All Emotion (require ALL)", e.andAllEmotion) +
+          emotionGatePicker("notAnyEmotion", "Not Any Emotion (block if ANY)", e.notAnyEmotion) +
+          emotionGatePicker("notAllEmotion", "Not All Emotion (block if ALL)", e.notAllEmotion) +
           '</div><div>' +
           '<div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;">Long Term State</div>' +
-          emotionGatePicker("andAnyLongTermEmotion", "andAnyLongTermEmotion (require ANY)", e.andAnyLongTermEmotion) +
-          emotionGatePicker("andAllLongTermEmotion", "andAllLongTermEmotion (require ALL)", e.andAllLongTermEmotion) +
-          emotionGatePicker("notAnyLongTermEmotion", "notAnyLongTermEmotion (block if ANY)", e.notAnyLongTermEmotion) +
-          emotionGatePicker("notAllLongTermEmotion", "notAllLongTermEmotion (block if ALL)", e.notAllLongTermEmotion) +
+          emotionGatePicker("andAnyLongTermEmotion", "And Any Long Term Emotion (require ANY)", e.andAnyLongTermEmotion) +
+          emotionGatePicker("andAllLongTermEmotion", "And All Long Term Emotion (require ALL)", e.andAllLongTermEmotion) +
+          emotionGatePicker("notAnyLongTermEmotion", "Not Any Long Term Emotion (block if ANY)", e.notAnyLongTermEmotion) +
+          emotionGatePicker("notAllLongTermEmotion", "Not All Long Term Emotion (block if ALL)", e.notAllLongTermEmotion) +
           '</div></div>' +
           '<div class="form-help">Dropdowns write arrays of emotion names. Engine accepts aliases like requireEmotion/blockEmotion too.</div>' +
           "</div>" +
@@ -16750,26 +16754,26 @@ module.exports = __webpack_require__(63);
           '<div class="form-grid" style="align-items:start">' +
           '<div>' +
           '<div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;">Current Vibe</div>' +
-          erosGatePicker("andAnyEros", "andAnyEros (require ANY)", e.andAnyEros) +
-          erosGatePicker("andAllEros", "andAllEros (require ALL)", e.andAllEros) +
-          erosGatePicker("notAnyEros", "notAnyEros (block if ANY)", e.notAnyEros) +
-          erosGatePicker("notAllEros", "notAllEros (block if ALL)", e.notAllEros) +
+          erosGatePicker("andAnyEros", "And Any Eros (require ANY)", e.andAnyEros) +
+          erosGatePicker("andAllEros", "And All Eros (require ALL)", e.andAllEros) +
+          erosGatePicker("notAnyEros", "Not Any Eros (block if ANY)", e.notAnyEros) +
+          erosGatePicker("notAllEros", "Not All Eros (block if ALL)", e.notAllEros) +
           '</div><div>' +
           '<div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;">Long Term State</div>' +
-          erosGatePicker("andAnyLongTermEros", "andAnyLongTermEros (require ANY)", e.andAnyLongTermEros) +
-          erosGatePicker("andAllLongTermEros", "andAllLongTermEros (require ALL)", e.andAllLongTermEros) +
-          erosGatePicker("notAnyLongTermEros", "notAnyLongTermEros (block if ANY)", e.notAnyLongTermEros) +
-          erosGatePicker("notAllLongTermEros", "notAllLongTermEros (block if ALL)", e.notAllLongTermEros) +
+          erosGatePicker("andAnyLongTermEros", "And Any Long Term Eros (require ANY)", e.andAnyLongTermEros) +
+          erosGatePicker("andAllLongTermEros", "And All Long Term Eros (require ALL)", e.andAllLongTermEros) +
+          erosGatePicker("notAnyLongTermEros", "Not Any Long Term Eros (block if ANY)", e.notAnyLongTermEros) +
+          erosGatePicker("notAllLongTermEros", "Not All Long Term Eros (block if ALL)", e.notAllLongTermEros) +
           '</div></div>' +
           '<div class="form-help">Dropdowns write arrays of eros intensity names. Engine accepts aliases like requireEros/blockEros too.</div>' +
           "</div>" +
 
           '<div id="sec_intent" class="form-section">' +
           '<div class="section-title" onclick="this.parentNode.classList.toggle(\'collapsed\')">Intent Gates</div>' +
-          intentGatePicker("andAnyIntent", "andAnyIntent (require ANY intent)", e.andAnyIntent) +
-          intentGatePicker("andAllIntent", "andAllIntent (require ALL intents)", e.andAllIntent) +
-          intentGatePicker("notAnyIntent", "notAnyIntent (block if ANY intent)", e.notAnyIntent) +
-          intentGatePicker("notAllIntent", "notAllIntent (block if ALL intents)", e.notAllIntent) +
+          intentGatePicker("andAnyIntent", "And Any Intent (require ANY intent)", e.andAnyIntent) +
+          intentGatePicker("andAllIntent", "And All Intent (require ALL intents)", e.andAllIntent) +
+          intentGatePicker("notAnyIntent", "Not Any Intent (block if ANY intent)", e.notAnyIntent) +
+          intentGatePicker("notAllIntent", "Not All Intent (block if ALL intents)", e.notAllIntent) +
           '<div class="form-help">Dropdowns write arrays of intent names. Engine accepts aliases like requireIntent/blockIntent too.</div>' +
           "</div>" +
 
@@ -17652,8 +17656,8 @@ window._finalizeSmartTag = function(input, context, field, keepFocus) {
 
           '<div class="form-section">' +
           '<div class="section-title" onclick="this.parentNode.classList.toggle(\'collapsed\')">Tag Gates</div>' +
-          renderSmartTagInput('shift', 'andAll', 'andAll (Require All)', shift.andAll) +
-          renderSmartTagInput('shift', 'notAll', 'notAll (Block if All)', shift.notAll) +
+          renderSmartTagInput('shift', 'andAll', 'And All (Require All)', shift.andAll) +
+          renderSmartTagInput('shift', 'notAll', 'Not All (Block if All)', shift.notAll) +
           '<div class="form-help">Note: <strong>block</strong> above acts as notAny (block if ANY present).</div>' +
           "</div>" +
 
@@ -17662,16 +17666,16 @@ window._finalizeSmartTag = function(input, context, field, keepFocus) {
           '<div class="form-grid" style="align-items:start">' +
           '<div>' +
           '<div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;">Current Mood</div>' +
-          shiftEmotionPicker("andAnyEmotion", "andAnyEmotion", shift.andAnyEmotion) +
-          shiftEmotionPicker("andAllEmotion", "andAllEmotion", shift.andAllEmotion) +
-          shiftEmotionPicker("notAnyEmotion", "notAnyEmotion", shift.notAnyEmotion) +
-          shiftEmotionPicker("notAllEmotion", "notAllEmotion", shift.notAllEmotion) +
+          shiftEmotionPicker("andAnyEmotion", "And Any Emotion", shift.andAnyEmotion) +
+          shiftEmotionPicker("andAllEmotion", "And All Emotion", shift.andAllEmotion) +
+          shiftEmotionPicker("notAnyEmotion", "Not Any Emotion", shift.notAnyEmotion) +
+          shiftEmotionPicker("notAllEmotion", "Not All Emotion", shift.notAllEmotion) +
           '</div><div>' +
           '<div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;">Long Term State</div>' +
-          shiftEmotionPicker("andAnyLongTermEmotion", "andAnyLongTermEmotion", shift.andAnyLongTermEmotion) +
-          shiftEmotionPicker("andAllLongTermEmotion", "andAllLongTermEmotion", shift.andAllLongTermEmotion) +
-          shiftEmotionPicker("notAnyLongTermEmotion", "notAnyLongTermEmotion", shift.notAnyLongTermEmotion) +
-          shiftEmotionPicker("notAllLongTermEmotion", "notAllLongTermEmotion", shift.notAllLongTermEmotion) +
+          shiftEmotionPicker("andAnyLongTermEmotion", "And Any Long Term Emotion", shift.andAnyLongTermEmotion) +
+          shiftEmotionPicker("andAllLongTermEmotion", "And All Long Term Emotion", shift.andAllLongTermEmotion) +
+          shiftEmotionPicker("notAnyLongTermEmotion", "Not Any Long Term Emotion", shift.notAnyLongTermEmotion) +
+          shiftEmotionPicker("notAllLongTermEmotion", "Not All Long Term Emotion", shift.notAllLongTermEmotion) +
           '</div></div>' +
           "</div>" +
 
@@ -17680,25 +17684,25 @@ window._finalizeSmartTag = function(input, context, field, keepFocus) {
           '<div class="form-grid" style="align-items:start">' +
           '<div>' +
           '<div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;">Current Vibe</div>' +
-          shiftErosGatePicker("andAnyEros", "andAnyEros", shift.andAnyEros) +
-          shiftErosGatePicker("andAllEros", "andAllEros", shift.andAllEros) +
-          shiftErosGatePicker("notAnyEros", "notAnyEros", shift.notAnyEros) +
-          shiftErosGatePicker("notAllEros", "notAllEros", shift.notAllEros) +
+          shiftErosGatePicker("andAnyEros", "And Any Eros", shift.andAnyEros) +
+          shiftErosGatePicker("andAllEros", "And All Eros", shift.andAllEros) +
+          shiftErosGatePicker("notAnyEros", "Not Any Eros", shift.notAnyEros) +
+          shiftErosGatePicker("notAllEros", "Not All Eros", shift.notAllEros) +
           '</div><div>' +
           '<div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;">Long Term State</div>' +
-          shiftErosGatePicker("andAnyLongTermEros", "andAnyLongTermEros", shift.andAnyLongTermEros) +
-          shiftErosGatePicker("andAllLongTermEros", "andAllLongTermEros", shift.andAllLongTermEros) +
-          shiftErosGatePicker("notAnyLongTermEros", "notAnyLongTermEros", shift.notAnyLongTermEros) +
-          shiftErosGatePicker("notAllLongTermEros", "notAllLongTermEros", shift.notAllLongTermEros) +
+          shiftErosGatePicker("andAnyLongTermEros", "And Any Long Term Eros", shift.andAnyLongTermEros) +
+          shiftErosGatePicker("andAllLongTermEros", "And All Long Term Eros", shift.andAllLongTermEros) +
+          shiftErosGatePicker("notAnyLongTermEros", "Not Any Long Term Eros", shift.notAnyLongTermEros) +
+          shiftErosGatePicker("notAllLongTermEros", "Not All Long Term Eros", shift.notAllLongTermEros) +
           '</div></div>' +
           "</div>" +
 
           '<div class="form-section">' +
           '<div class="section-title" onclick="this.parentNode.classList.toggle(\'collapsed\')">Intent Gates</div>' +
-          shiftIntentPicker("andAnyIntent", "andAnyIntent", shift.andAnyIntent) +
-          shiftIntentPicker("andAllIntent", "andAllIntent", shift.andAllIntent) +
-          shiftIntentPicker("notAnyIntent", "notAnyIntent", shift.notAnyIntent) +
-          shiftIntentPicker("notAllIntent", "notAllIntent", shift.notAllIntent) +
+          shiftIntentPicker("andAnyIntent", "And Any Intent", shift.andAnyIntent) +
+          shiftIntentPicker("andAllIntent", "And All Intent", shift.andAllIntent) +
+          shiftIntentPicker("notAnyIntent", "Not Any Intent", shift.notAnyIntent) +
+          shiftIntentPicker("notAllIntent", "Not All Intent", shift.notAllIntent) +
           "</div>" +
 
           '<div class="form-section">' +
@@ -19639,15 +19643,18 @@ window._finalizeSmartTag = function(input, context, field, keepFocus) {
         }
         tutStep++;
         if (tutStep >= currentTutData.length) {
-          window.endTutorial();
+          window.endTutorial(true);
         } else {
           window.renderTutorialStep();
         }
       };
 
-      window.endTutorial = function() {
+      window.endTutorial = function(completed) {
         document.getElementById('tutorialRing').style.display = 'none';
         document.getElementById('tutorialTooltip').style.display = 'none';
+        if (completed) {
+          window.showToast('Tutorial completed! You\'re ready to start creating.', 'success');
+        }
       };
 
       function currShift() {
