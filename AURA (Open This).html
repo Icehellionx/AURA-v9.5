@@ -19426,90 +19426,93 @@ window._finalizeSmartTag = function(input, context, field, keepFocus) {
       // --------------------------------------------------------------------------
       var tutStep = 0;
       var basicTutData = [
-        { id: null, title: "Welcome to AURA", text: "This tutorial will walk you through creating a Dynamic Lore entry. We have automatically created a new entry for you to edit." },
+        { id: null, title: "Welcome to AURA Data Manager", text: "This tutorial will guide you through the basics of creating Dynamic Lore entries and using the main features." },
+        { id: null, title: "Understanding the Tabs", text: "At the top, you'll see tabs: Visual (edit entries), Code (view JSON), Graph (visualize relationships), Laboratory (test entries), Personality/Scenario/Init Msg (global text)." },
         { id: "fld_idname", title: "ID Name", text: "Give your entry a unique ID (e.g., 'holly_fear_response'). This helps you find it later and reference it in other tools." },
-        { id: "fld_keywords", title: "Keywords", text: "Enter comma-separated words that trigger this entry (e.g., 'christmas, snow, holiday'). If these words appear in chat, this entry becomes active." },
-        { id: "btn_ai_pers", title: "AI Assistance", text: "Click this AI button to automatically generate the personality text based on your settings! It saves a lot of typing." },
-        { id: "sec_emotion", title: "Emotion Gates", text: "These gates control WHEN this entry triggers based on the mood. For example, require 'JOY' so this entry only happens when the user is happy." },
-        { id: "btn_save_file", title: "Save Your Work", text: "Finally, remember to click 'Save to File' frequently to download your database as a .js file." }
+        { id: "sec_keyword_tag", title: "Keywords", text: "Enter words/phrases that trigger this entry (e.g., 'christmas, snow, holiday'). When these appear in chat, this entry activates. Use the smart tag input to add them." },
+        { id: "sec_personality", title: "Personality Section", text: "This defines the character's mindset, tone, and behavior for this context. You can type manually or click the AI button to generate it automatically." },
+        { id: "sec_scenario", title: "Scenario Section", text: "This defines the physical situation, actions, or plot points. It describes what's happening in the scene." },
+        { id: "sec_emotion", title: "Emotion Gates", text: "These control WHEN this entry triggers based on mood. For example, require 'JOY' so this entry only happens when the character is happy." },
+        { id: "btn_save_file", title: "Save Your Work", text: "Click 'Save Script to File' frequently to download your database as a .js file. Your work is also auto-saved to browser storage." }
       ];
 
       var advancedTutData = [
-        { id: null, title: "Advanced Tutorial", text: "This detailed guide covers every field in the Dynamic Lore editor." },
-        { id: "fld_idname", title: "ID Name", text: "Unique identifier for this entry. Used for debugging and referencing." },
-        { id: "fld_priority", title: "Priority", text: "Determines insertion order. Higher numbers appear lower in context (more important)." },
-        { id: "fld_group", title: "Group", text: "Optional label to organize entries in the sidebar." },
-        { id: "fld_keywords", title: "Keywords", text: "Phrases that trigger this entry when found in user/AI chat." },
-        { id: "fld_tag", title: "Tag", text: "A specific tag name for this entry. Useful if other entries want to require/block this specific entry via gates." },
-        { id: "fld_triggers", title: "Triggers (Emitted Tags)", text: "Tags that become 'active' when this entry is inserted. Other entries can require these tags." },
-        { id: "fld_probability", title: "Probability", text: "Chance for this entry to trigger when keywords match (e.g., '50%')." },
-        { id: "fld_block", title: "Block (Block Tags)", text: "If any of these tags are active in the context, this entry will NOT trigger." },
-        { id: "sec_personality", title: "Personality", text: "Defines the character's mind, tone, and behavior for this specific context." },
-        { id: "sec_scenario", title: "Scenario", text: "Defines the physical situation, actions, or plot points for this context." },
-        { id: "sec_tag_gates", title: "Tag Gates", text: "Require (andAll) or Block (notAll) based on other active tags in the system." },
-        { id: "sec_emotion", title: "Emotion Gates", text: "Restrict this entry to specific emotional states (Joy, Anger, etc.)." },
-        { id: "sec_eros", title: "Eros Gates", text: "Restrict this entry to specific arousal/romance levels (Tension, Passion, etc.)." },
-        { id: "sec_intent", title: "Intent Gates", text: "Restrict this entry to specific user intents (Question, Command, etc.)." },
-        { id: "sec_entities", title: "Entity Filters", text: "Only trigger if specific characters are present in the scene." }
+        { id: null, title: "Advanced Tutorial: Complete Guide", text: "This comprehensive tutorial covers every feature and field in AURA Data Manager. We've created a new Dynamic Lore entry for you." },
+        { id: null, title: "The Sidebar", text: "The left sidebar shows all your entries. Click 'Chars', 'Pairs', or 'Lore' to switch types. Use the search box to filter entries. Create new entries with the ✨ New Entry button." },
+        { id: null, title: "Main Tabs Overview", text: "Visual: Edit entries visually. Code: See raw JSON. Graph: Visualize entry relationships. Laboratory: Test context simulation. Personality/Scenario/Init Msg: Set global texts." },
+        { id: "fld_idname", title: "ID Name (Optional)", text: "Unique identifier for this entry. Useful for debugging and referencing in other tools. Example: 'holly_christmas_excitement'" },
+        { id: "fld_priority", title: "Priority Number", text: "Determines insertion order in context. Higher numbers = inserted lower = more recent/important. Default is 0." },
+        { id: "fld_group", title: "Group Label", text: "Optional organizing label that appears in the sidebar. Groups related entries together visually." },
+        { id: "sec_keyword_tag", title: "Keyword & Tag Controls", text: "Keywords: Trigger words (e.g., 'christmas', 'snow'). Tag: A specific tag name this entry emits. Triggers: Tags activated when this entry fires. Probability: Chance to trigger (e.g., '50%'). Block: Tags that prevent this entry." },
+        { id: "sec_personality", title: "Personality Text", text: "Defines the character's mindset, tone, emotions, and behavior for this context. Use the AI button for automatic generation." },
+        { id: "sec_scenario", title: "Scenario Text", text: "Describes the physical situation, actions, environment, or plot points happening in this context." },
+        { id: "sec_tag_gates", title: "Tag Gates", text: "Control entry activation based on other tags. 'And All': Requires ALL listed tags. 'Not All': Blocks if ALL listed tags present. 'Block' field above acts as 'Not Any'." },
+        { id: "sec_emotion", title: "Emotion Gates", text: "Gate based on emotional state. Current Mood: The character's current emotion (e.g., JOY, ANGER). Long Term State: Persistent emotional traits. Use 'And Any' to require at least one emotion." },
+        { id: "sec_eros", title: "EROS Gates (Romance/Arousal)", text: "Gate based on romantic/arousal intensity. Current Vibe: Immediate arousal level. Long Term State: Overall relationship intensity. Levels range from TENSION to PASSION." },
+        { id: "sec_intent", title: "Intent Gates", text: "Gate based on user's message intent: Question, Command, Statement, Exclamation, etc. Useful for context-specific responses." },
+        { id: "sec_entities", title: "Entity Restrictions", text: "Restrict this entry to trigger only when specific characters are detected in the conversation. Leave unchecked for no restriction." },
+        { id: null, title: "Code Tab", text: "Switch to the Code tab to see your entry as raw JSON. You can edit JSON directly here if you prefer. The 'Full Export' panel shows your entire database." },
+        { id: null, title: "Graph Tab", text: "The Graph tab visualizes relationships between entries based on tags, gates, and entity connections. Use it to understand your database structure." },
+        { id: null, title: "Laboratory Tab", text: "Test your entries! Set test messages, emotions, and tags to simulate how entries will trigger. Great for debugging complex gate logic." },
+        { id: "btn_save_file", title: "Saving Your Work", text: "Click 'Save Script to File' to download your .js database. Your work also auto-saves to browser storage. Use 'Load Script' to import .js files." }
       ];
 
       var walkthroughTutData = [
-        { id: null, title: "Interactive Walkthrough", text: "This guide will help you create a valid entry step-by-step. You must complete each step to proceed." },
-        { 
-          id: "fld_idname", 
-          title: "Step 1: ID Name", 
-          text: "Enter a unique ID for this entry (e.g., 'holly_greeting').",
+        { id: null, title: "Guided Walkthrough: Create Your First Entry", text: "This interactive guide will help you create a complete, valid Dynamic Lore entry step-by-step. You must complete each step before advancing." },
+        { id: null, title: "What You'll Create", text: "We'll create an entry that triggers when certain keywords appear and modifies the character's behavior. This teaches you the core workflow." },
+        {
+          id: "fld_idname",
+          title: "Step 1: ID Name (Optional)",
+          text: "Give this entry a memorable ID like 'holly_greeting' or 'excited_response'. This helps you find it later. You can skip this if you prefer.",
           validate: function() {
-            var e = curr();
-            if (!e || !e.id_name) {
-              window.showToast("Please enter an ID Name.", "error");
-              return false;
-            }
-            return true;
+            return true; // ID is optional, always allow next
           }
         },
-        { 
-          id: "fld_keywords", 
-          title: "Step 2: Keywords", 
-          text: "Enter at least one keyword that triggers this entry (e.g., 'hello').",
+        {
+          id: "sec_keyword_tag",
+          title: "Step 2: Add Keywords",
+          text: "Enter at least one keyword that will trigger this entry. Example: 'hello', 'hi', or 'greetings'. Click in the keyword box and type, then press Enter or Tab.",
           validate: function() {
             var e = curr();
             if (!e || !e.keywords || e.keywords.length === 0) {
-              window.showToast("Please enter at least one keyword.", "error");
+              window.showToast("Please add at least one keyword to continue.", "error");
               return false;
             }
+            window.showToast("Great! Keywords added: " + e.keywords.join(", "), "success");
             return true;
           }
         },
-        { 
-          id: "sec_personality", 
-          title: "Step 3: Personality", 
-          text: "Define the personality. You can type it manually or use the AI button.",
+        {
+          id: "sec_personality",
+          title: "Step 3: Add Personality",
+          text: "Enter text that defines the character's behavior when this entry triggers. Example: 'Holly is cheerful and enthusiastic, greeting the user warmly.' You can also click the AI button to generate text.",
           validate: function() {
             var e = curr();
-            if (!e || !e.personality) {
-              window.showToast("Please enter personality text.", "error");
+            if (!e || !e.personality || e.personality.trim().length < 10) {
+              window.showToast("Please add personality text (at least 10 characters).", "error");
               return false;
             }
+            window.showToast("Perfect! Personality defined.", "success");
             return true;
           }
         },
-        { 
-          id: "sec_emotion", 
-          title: "Step 4: Emotion Gates", 
-          text: "Select at least one 'Current Mood' emotion (e.g., NEUTRAL) to gate this entry.",
+        {
+          id: "sec_scenario",
+          title: "Step 4: Add Scenario (Optional)",
+          text: "Optionally, add a scenario that describes what's happening physically. Example: 'Holly waves excitedly from across the room.' This is optional - click Next to skip.",
           validate: function() {
-            var e = curr();
-            if (!e) return false;
-            var has = (e.andAnyEmotion && e.andAnyEmotion.length) || (e.andAllEmotion && e.andAllEmotion.length) || (e.notAnyEmotion && e.notAnyEmotion.length) || (e.notAllEmotion && e.notAllEmotion.length);
-            if (!has) {
-              window.showToast("Please select at least one emotion gate.", "error");
-              return false;
-            }
-            return true;
+            return true; // Scenario is optional
           }
         },
-        { id: "btn_save_file", title: "Step 5: Save", text: "Great! Your entry is ready. Click 'Save to File' to download your database." }
+        {
+          id: "sec_emotion",
+          title: "Step 5: Set an Emotion Gate (Optional)",
+          text: "Optionally, add emotion gates to control when this triggers. For example, select 'JOY' in 'And Any Emotion' so this only happens when happy. Click Next to skip this step.",
+          validate: function() {
+            return true; // Gates are optional
+          }
+        },
+        { id: "btn_save_file", title: "Complete! Save Your Work", text: "Excellent! Your entry is ready. Click 'Save Script to File' (the green button with 💾) to download your database as a .js file. You can load it into your AI chat system." }
       ];
 
       var currentTutData = basicTutData;
@@ -19583,42 +19586,59 @@ window._finalizeSmartTag = function(input, context, field, keepFocus) {
         if (step.id) {
           var el = document.getElementById(step.id);
           if (el) {
-            el.scrollIntoView({block: "center", behavior: "auto"});
+            // If element is hidden or has no dimensions, try to find visible parent
             var rect = el.getBoundingClientRect();
-            ring.style.display = 'block';
-            ring.style.top = (rect.top - 5) + 'px';
-            ring.style.left = (rect.left - 5) + 'px';
-            ring.style.width = (rect.width + 10) + 'px';
-            ring.style.height = (rect.height + 10) + 'px';
-
-            // Get tooltip dimensions (must be visible to measure)
-            var tipRect = tip.getBoundingClientRect();
-
-            // Try to position below the element first
-            var topPos = rect.bottom + 15;
-            var leftPos = rect.left;
-
-            // If tooltip would go off the bottom, try positioning above
-            if (topPos + tipRect.height > window.innerHeight - 10) {
-              topPos = rect.top - tipRect.height - 15;
-            }
-
-            // If still off screen (element at very top), position beside it
-            if (topPos < 10) {
-              topPos = rect.top;
-              leftPos = rect.right + 15;
-
-              // If off right edge, try left side
-              if (leftPos + tipRect.width > window.innerWidth - 10) {
-                leftPos = rect.left - tipRect.width - 15;
+            if (rect.width === 0 || rect.height === 0 || window.getComputedStyle(el).display === 'none') {
+              // Try to find the parent form-group or section
+              var parent = el.closest('.form-group, .form-section');
+              if (parent) {
+                el = parent;
+                rect = el.getBoundingClientRect();
               }
             }
 
-            // Final clamp to ensure it's fully within viewport
-            var clamped = clampToViewport(leftPos, topPos, tipRect, 10);
-            tip.style.top = clamped.top + 'px';
-            tip.style.left = clamped.left + 'px';
-            return;
+            // Only proceed if we have valid dimensions
+            if (rect.width > 0 && rect.height > 0) {
+              el.scrollIntoView({block: "center", behavior: "auto"});
+
+              // Re-get rect after scrolling
+              rect = el.getBoundingClientRect();
+
+              ring.style.display = 'block';
+              ring.style.top = (rect.top - 5) + 'px';
+              ring.style.left = (rect.left - 5) + 'px';
+              ring.style.width = (rect.width + 10) + 'px';
+              ring.style.height = (rect.height + 10) + 'px';
+
+              // Get tooltip dimensions (must be visible to measure)
+              var tipRect = tip.getBoundingClientRect();
+
+              // Try to position below the element first
+              var topPos = rect.bottom + 15;
+              var leftPos = rect.left;
+
+              // If tooltip would go off the bottom, try positioning above
+              if (topPos + tipRect.height > window.innerHeight - 10) {
+                topPos = rect.top - tipRect.height - 15;
+              }
+
+              // If still off screen (element at very top), position beside it
+              if (topPos < 10) {
+                topPos = rect.top;
+                leftPos = rect.right + 15;
+
+                // If off right edge, try left side
+                if (leftPos + tipRect.width > window.innerWidth - 10) {
+                  leftPos = rect.left - tipRect.width - 15;
+                }
+              }
+
+              // Final clamp to ensure it's fully within viewport
+              var clamped = clampToViewport(leftPos, topPos, tipRect, 10);
+              tip.style.top = clamped.top + 'px';
+              tip.style.left = clamped.left + 'px';
+              return;
+            }
           }
         }
 
