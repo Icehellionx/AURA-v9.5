@@ -14936,6 +14936,7 @@ module.exports = __webpack_require__(63);
             notAllIntent: [],
             personality: "",
             scenario: "",
+            example_dialogs: "",
             remove_personality: "",
             remove_scenario: "",
             characters: [],
@@ -16187,6 +16188,7 @@ module.exports = __webpack_require__(63);
 
         if (l.personality && String(l.personality).length) o.personality = l.personality;
         if (l.scenario && String(l.scenario).length) o.scenario = l.scenario;
+        if (l.example_dialogs && String(l.example_dialogs).length) o.example_dialogs = l.example_dialogs;
         if (l.remove_personality && String(l.remove_personality).length) o.remove_personality = l.remove_personality;
         if (l.remove_scenario && String(l.remove_scenario).length) o.remove_scenario = l.remove_scenario;
 
@@ -16445,6 +16447,7 @@ module.exports = __webpack_require__(63);
 
           personality: e.personality || "",
           scenario: e.scenario || "",
+          example_dialogs: e.example_dialogs || "",
           remove_personality: e.remove_personality || "",
           remove_scenario: e.remove_scenario || "",
           characters: e.characters || [],
@@ -16693,17 +16696,13 @@ module.exports = __webpack_require__(63);
           "</div>" +
           "</div>" +
           '<div class="form-grid">' +
-          '<div class="form-group">' +
           renderSmartTagInput('entry', 'triggers', 'Triggers', e.triggers, 'fld_triggers', 'Tags to emit when this entry fires.') +
-          "</div>" +
           '<div class="form-group">' +
           '<label class="form-label">probability</label>' +
           '<input id="fld_probability" class="form-input" value="' + escHtml(e.probability || "") + '" oninput="save({probability:this.value})">' +
           '<div class="form-help">Example: \"40%\" (optional).</div>' +
           "</div>" +
-          '<div class="form-group">' +
           renderSmartTagInput('entry', 'block', 'Block', e.block, 'fld_block', 'Blocks if ANY of these tags are present.') +
-          "</div>" +
           "</div>" +
           "</div>" +
 
@@ -16718,6 +16717,12 @@ module.exports = __webpack_require__(63);
           '<div class="section-title" onclick="this.parentNode.classList.toggle(\'collapsed\')">Scenario <button class="pill-button small" onclick="event.stopPropagation();window.openAiModal(\'lore-scenario-' + e.id + '\')">AI</button></div>' +
           '<textarea id="lore-scenario-' + e.id + '" class="form-textarea" style="min-height:140px;" spellcheck="false" oninput="save({scenario:this.value})">' + escHtml(e.scenario || "") + "</textarea>" +
           '<div style="margin-top:8px;"><label class="form-label" style="font-size:10px;">Remove Text (Optional)</label><textarea class="form-textarea" style="min-height:60px;font-size:11px;" oninput="save({remove_scenario:this.value})">' + escHtml(e.remove_scenario || "") + '</textarea></div>' +
+          "</div>" +
+
+          '<div id="sec_example_dialogs" class="form-section">' +
+          '<div class="section-title" onclick="this.parentNode.classList.toggle(\'collapsed\')">Example Dialogs <button class="pill-button small" onclick="event.stopPropagation();window.openAiModal(\'lore-example-dialogs-' + e.id + '\')">AI</button></div>' +
+          '<textarea id="lore-example-dialogs-' + e.id + '" class="form-textarea" style="min-height:120px;" spellcheck="false" oninput="save({example_dialogs:this.value})">' + escHtml(e.example_dialogs || "") + "</textarea>" +
+          '<div class="form-help">Example conversations showing the character\'s speaking style and typical responses. This feeds context.character.example_dialogs.</div>' +
           "</div>" +
 
           '<div id="sec_tag_gates" class="form-section">' +
