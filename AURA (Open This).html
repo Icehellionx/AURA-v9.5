@@ -13570,15 +13570,6 @@ module.exports = __webpack_require__(63);
         <div class="brand-block">
           <div class="brand-title">AURA Data Manager</div>
         </div>
-        <form class="form-group" style="flex-grow: 1; margin-bottom: 0; display: flex; gap: 6px; align-items: center;" onsubmit="event.preventDefault(); window.saveApiKey();">
-          <input type="text" name="username" value="AI_API_Key" autocomplete="username" style="display:none">
-          <select id="apiKeySelector" class="form-input small" style="width: 150px;" onchange="window.switchApiKey()">
-            <option value="">Select API Key...</option>
-          </select>
-          <input type="password" id="apiKey" name="password" class="form-input small" placeholder="Enter API Key" autocomplete="current-password" style="flex: 1; min-width: 150px;">
-          <button type="submit" class="pill-button small">Save</button>
-          <button type="button" class="pill-button small" onclick="window.openApiKeyManager()" title="Manage API Keys">⚙️</button>
-        </form>
         <div class="tab-toggle" role="tablist" aria-label="Main view tabs">
           <button class="tab-button active" onclick="window.switchTab('visual')" role="tab" aria-selected="true" aria-controls="visualEditor">Visual</button>
           <button class="tab-button" onclick="window.switchTab('code')" role="tab" aria-selected="false" aria-controls="codeView">Code</button>
@@ -13605,6 +13596,7 @@ module.exports = __webpack_require__(63);
           <button class="pill-button small" style="border-color: var(--accent); padding: 2px 8px; font-size:10px;" onclick="window.startWalkthrough()" title="Step-by-step guided creation">Walk Through</button>
         </div>
         <button class="pill-button small" onclick="window.showKeyboardShortcuts()" title="View keyboard shortcuts (Ctrl+?)" style="margin-left: 8px;">⌨️</button>
+        <button class="pill-button small" onclick="window.openApiKeyManager()" title="Manage API Keys" style="margin-left: 8px;">🔑 API Keys</button>
       </header>
 
       <div class="main-content">
@@ -13619,27 +13611,24 @@ module.exports = __webpack_require__(63);
         <div id="personalityEditor" class="editor-card hidden">
           <div class="section-title">Personality <div style="float:right; display:flex; gap:6px;"><button class="pill-button small" onclick="window.openAiTextEditModal('personalityTextarea')">AI Edit</button><button class="pill-button small" onclick="window.toggleZenMode()">Zen</button></div></div>
           <div id="personalityTextarea" class="quill-editor-container" style="min-height: 400px;"></div>
-          <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
-            <button class="pill-button small success" onclick="window.savePersonality()">Save Personality</button>
-            <div id="personalityStats" class="form-help" style="margin:0;">0 words / ~0 tokens</div>
+          <div style="margin-top: 10px; display: flex; justify-content: flex-end; align-items: center;">
+            <div id="personalityStats" class="form-help" style="margin:0;">0 words / ~0 tokens · Auto-saved</div>
           </div>
         </div>
 
         <div id="scenarioEditor" class="editor-card hidden">
           <div class="section-title">Scenario <div style="float:right; display:flex; gap:6px;"><button class="pill-button small" onclick="window.openAiTextEditModal('scenarioTextarea')">AI Edit</button><button class="pill-button small" onclick="window.toggleZenMode()">Zen</button></div></div>
           <div id="scenarioTextarea" class="quill-editor-container" style="min-height: 400px;"></div>
-          <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
-            <button class="pill-button small success" onclick="window.saveScenario()">Save Scenario</button>
-            <div id="scenarioStats" class="form-help" style="margin:0;">0 words / ~0 tokens</div>
+          <div style="margin-top: 10px; display: flex; justify-content: flex-end; align-items: center;">
+            <div id="scenarioStats" class="form-help" style="margin:0;">0 words / ~0 tokens · Auto-saved</div>
           </div>
         </div>
 
         <div id="initialMessageEditor" class="editor-card hidden">
           <div class="section-title">Initial Message <div style="float:right; display:flex; gap:6px;"><button class="pill-button small" onclick="window.openAiTextEditModal('initialMessageTextarea')">AI Edit</button><button class="pill-button small" onclick="window.toggleZenMode()">Zen</button></div></div>
           <div id="initialMessageTextarea" class="quill-editor-container" style="min-height: 400px;"></div>
-          <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
-            <button class="pill-button small success" onclick="window.saveInitialMessage()">Save Initial Message</button>
-            <div id="initialMessageStats" class="form-help" style="margin:0;">0 words / ~0 tokens</div>
+          <div style="margin-top: 10px; display: flex; justify-content: flex-end; align-items: center;">
+            <div id="initialMessageStats" class="form-help" style="margin:0;">0 words / ~0 tokens · Auto-saved</div>
           </div>
         </div>
 
@@ -13955,6 +13944,14 @@ module.exports = __webpack_require__(63);
       </div>
     </div>
   </div>
+
+  <!-- Hidden API Key Form Elements -->
+  <form style="display: none;">
+    <select id="apiKeySelector">
+      <option value="">Select API Key...</option>
+    </select>
+    <input type="password" id="apiKey" placeholder="Enter API Key">
+  </form>
 
   <!-- API Key Manager Modal -->
   <div id="apiKeyManagerModal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 450; display: flex; align-items: center; justify-content: center;">
