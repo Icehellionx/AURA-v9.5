@@ -160,6 +160,20 @@
       font-size: 14px;
     }
 
+    .entry-item.dragging {
+      opacity: 0.4;
+      cursor: grabbing;
+    }
+
+    .entry-item.drag-over {
+      border-top: 2px solid var(--accent);
+      margin-top: 2px;
+    }
+
+    .entry-item[draggable="true"] {
+      cursor: grab;
+    }
+
     .entry-item-title {
       font-size: 14px;
       font-weight: 600;
@@ -16642,7 +16656,7 @@ module.exports = __webpack_require__(63);
         }
       }
 
-      function renderEntry(e, depth) {
+      function renderEntry(e, depth, parentId) {
         var title = "Unnamed";
         var sub = "";
         var html = "";
@@ -16663,14 +16677,20 @@ module.exports = __webpack_require__(63);
         var groupColor = e.group ? stringToColor(e.group) : 'transparent';
         var itemClass = depth > 0 ? "entry-item shift-item" : "entry-item";
 
-        html += '<div class="' + itemClass + ' ' + active + ' ' + selected + '" style="margin-left:' + (depth * 20) + 'px" onclick="window.selectEntry(\'' + e.id + '\', null, event)">';
+        html += '<div class="' + itemClass + ' ' + active + ' ' + selected + '" ';
+        html += 'draggable="true" ';
+        html += 'data-entry-id="' + e.id + '" ';
+        html += 'data-depth="' + depth + '" ';
+        html += 'data-parent-id="' + (parentId || '') + '" ';
+        html += 'style="margin-left:' + (depth * 20) + 'px" ';
+        html += 'onclick="window.selectEntry(\'' + e.id + '\', null, event)">';
         html += '<div><span class="group-indicator" style="background-color:' + groupColor + '"></span><span class="entry-item-title">' + (depth > 0 ? 'Shift: ' : '') + escHtml(title) + "</span></div>";
         html += '<div class="entry-item-subtitle">' + escHtml(sub) + "</div>";
         html += "</div>";
 
         if (STATE.type === "dynamiclore" && e.shifts && e.shifts.length) {
           for (var j = 0; j < e.shifts.length; j++) {
-            html += renderEntry(e.shifts[j], depth + 1);
+            html += renderEntry(e.shifts[j], depth + 1, e.id);
           }
         }
         return html;
@@ -19365,7 +19385,172 @@ window._finalizeSmartTag = function(input, context, field, keepFocus) {
         renderEditor();
         renderCode();
 
-        
+        // --------------------------------------------------------------------------
+        // Drag and Drop Reordering
+        // --------------------------------------------------------------------------
+        var dragState = {
+          draggedId: null,
+          draggedDepth: null,
+          draggedParentId: null
+        };
+
+        // Helper function to find entry and its parent
+        function findEntryAndParent(entryId, arr, parent) {
+          parent = parent || null;
+          if (!arr) return null;
+
+          for (var i = 0; i < arr.length; i++) {
+            if (arr[i].id === entryId) {
+              return { entry: arr[i], parent: parent, array: arr, index: i };
+            }
+            // Recursively search in shifts
+            if (arr[i].shifts && arr[i].shifts.length) {
+              var result = findEntryAndParent(entryId, arr[i].shifts, arr[i]);
+              if (result) return result;
+            }
+          }
+          return null;
+        }
+
+        // Reorder function
+        window.reorderEntry = function(draggedId, targetId, insertBefore) {
+          var rootArray = STATE.data[STATE.type];
+
+          // Find dragged entry and its context
+          var draggedInfo = findEntryAndParent(draggedId, rootArray);
+          if (!draggedInfo) return;
+
+          // Find target entry and its context
+          var targetInfo = findEntryAndParent(targetId, rootArray);
+          if (!targetInfo) return;
+
+          // Can only reorder within the same parent (same nesting level)
+          if ((draggedInfo.parent ? draggedInfo.parent.id : null) !== (targetInfo.parent ? targetInfo.parent.id : null)) {
+            return; // Different parents, don't allow reorder
+          }
+
+          // Remove from source
+          var draggedEntry = draggedInfo.array.splice(draggedInfo.index, 1)[0];
+
+          // Find target index again (may have changed after removal)
+          var targetInfo2 = findEntryAndParent(targetId, rootArray);
+          if (!targetInfo2) {
+            // Target not found, put it back
+            draggedInfo.array.splice(draggedInfo.index, 0, draggedEntry);
+            return;
+          }
+
+          // Insert at target position
+          var insertIndex = targetInfo2.index;
+          if (!insertBefore) {
+            insertIndex++; // Insert after
+          }
+
+          targetInfo2.array.splice(insertIndex, 0, draggedEntry);
+
+          // Re-render and save
+          renderList();
+          autoSave();
+        };
+
+        // Attach drag event listeners to the entries list container
+        var entriesList = document.getElementById('entriesList');
+        if (entriesList) {
+          entriesList.addEventListener('dragstart', function(e) {
+            var target = e.target.closest('.entry-item');
+            if (!target) return;
+
+            dragState.draggedId = target.getAttribute('data-entry-id');
+            dragState.draggedDepth = parseInt(target.getAttribute('data-depth'));
+            dragState.draggedParentId = target.getAttribute('data-parent-id') || null;
+
+            target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', target.innerHTML);
+          });
+
+          entriesList.addEventListener('dragend', function(e) {
+            var target = e.target.closest('.entry-item');
+            if (target) {
+              target.classList.remove('dragging');
+            }
+
+            // Remove all drag-over classes
+            var allItems = entriesList.querySelectorAll('.entry-item');
+            for (var i = 0; i < allItems.length; i++) {
+              allItems[i].classList.remove('drag-over');
+            }
+
+            dragState.draggedId = null;
+            dragState.draggedDepth = null;
+            dragState.draggedParentId = null;
+          });
+
+          entriesList.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            var target = e.target.closest('.entry-item');
+            if (!target) return;
+
+            var targetId = target.getAttribute('data-entry-id');
+            var targetDepth = parseInt(target.getAttribute('data-depth'));
+            var targetParentId = target.getAttribute('data-parent-id') || null;
+
+            // Only allow drop if same depth and same parent
+            if (dragState.draggedId &&
+                dragState.draggedId !== targetId &&
+                dragState.draggedDepth === targetDepth &&
+                dragState.draggedParentId === targetParentId) {
+              e.dataTransfer.dropEffect = 'move';
+
+              // Remove drag-over from all items
+              var allItems = entriesList.querySelectorAll('.entry-item');
+              for (var i = 0; i < allItems.length; i++) {
+                allItems[i].classList.remove('drag-over');
+              }
+
+              target.classList.add('drag-over');
+            } else {
+              e.dataTransfer.dropEffect = 'none';
+            }
+          });
+
+          entriesList.addEventListener('drop', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            var target = e.target.closest('.entry-item');
+            if (!target) return;
+
+            var targetId = target.getAttribute('data-entry-id');
+            var targetDepth = parseInt(target.getAttribute('data-depth'));
+            var targetParentId = target.getAttribute('data-parent-id') || null;
+
+            // Only allow drop if same depth and same parent
+            if (dragState.draggedId &&
+                dragState.draggedId !== targetId &&
+                dragState.draggedDepth === targetDepth &&
+                dragState.draggedParentId === targetParentId) {
+
+              // Determine if we should insert before or after based on mouse position
+              var rect = target.getBoundingClientRect();
+              var midpoint = rect.top + rect.height / 2;
+              var insertBefore = e.clientY < midpoint;
+
+              window.reorderEntry(dragState.draggedId, targetId, insertBefore);
+            }
+
+            target.classList.remove('drag-over');
+          });
+
+          entriesList.addEventListener('dragleave', function(e) {
+            var target = e.target.closest('.entry-item');
+            if (target && !target.contains(e.relatedTarget)) {
+              target.classList.remove('drag-over');
+            }
+          });
+        }
+
+
         // --------------------------------------------------------------------------
         // Modal UX: Esc-to-close + Focus Trap (topmost open modal)
         // --------------------------------------------------------------------------
