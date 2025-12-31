@@ -46,12 +46,14 @@
     body {
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      overflow: auto;
+      min-height: 100vh;
     }
 
     .app-shell {
       display: flex;
-      height: 100vh;
+      min-height: 100vh;
+      min-width: 1400px;
     }
 
     .sidebar {
@@ -111,7 +113,7 @@
 
     .entries-list {
       flex: 1;
-      overflow-y: auto;
+      overflow: auto;
       display: flex;
       flex-direction: column;
       gap: 2px;
@@ -271,7 +273,6 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
     }
 
     .main-header {
@@ -335,10 +336,8 @@
     .main-content {
       flex: 1;
       display: flex;
-      overflow: hidden;
       position: relative;
-      /* padding moved to view-container */
-      padding: 20px;
+      padding: 0;
     }
 
     .editor-card {
@@ -347,6 +346,12 @@
       border-radius: var(--radius-lg);
       padding: 20px;
       box-shadow: var(--shadow-soft);
+    }
+
+    #visualEditor,
+    #codeView,
+    #laboratoryView {
+      min-width: 720px;
     }
 
     .form-section {
@@ -379,6 +384,8 @@
       margin-bottom: 6px;
       text-transform: uppercase;
       letter-spacing: 0.05em;
+      min-height: 28px;
+      line-height: 20px;
     }
 
     .form-help {
@@ -909,7 +916,6 @@
     .main-content { padding: 0; } /* Reset for flex layout */
     .view-container {
       flex: 1;
-      overflow-y: auto;
       padding: 20px;
       position: relative;
     }
@@ -14962,12 +14968,137 @@ module.exports = __webpack_require__(63);
       };
 
       window.duplicate = function () {
+        // Handle Shift Duplication (Shift Editing Mode)
+        if (STATE.type === 'dynamiclore' && STATE.shiftId) {
+            var parent = curr();
+            var shift = currShift();
+            if (parent && shift) {
+                var clone = JSON.parse(JSON.stringify(shift));
+                clone.id = id("shift");
+                clone.id_name = (clone.id_name || "shift") + "_copy";
+                
+                // Regenerate IDs for nested shifts
+                var regenerateIds = function(shifts) {
+                    if (!shifts) return;
+                    shifts.forEach(function(s) {
+                        s.id = id("shift");
+                        if (s.shifts) regenerateIds(s.shifts);
+                    });
+                };
+                regenerateIds(clone.shifts);
+
+                // Find insertion point
+                var insertRecursive = function(entries) {
+                    for (var i = 0; i < entries.length; i++) {
+                        if (entries[i].id === shift.id) {
+                            entries.splice(i + 1, 0, clone);
+                            return true;
+                        }
+                        if (entries[i].shifts) {
+                            if (insertRecursive(entries[i].shifts)) return true;
+                        }
+                    }
+                    return false;
+                };
+                
+                if (parent.shifts) insertRecursive(parent.shifts);
+                
+                STATE.shiftId = clone.id;
+                renderList(true);
+                renderEditor();
+                renderCode();
+                autoSave();
+                window.maybeRefreshGraph();
+                window.showToast("Shift duplicated", "success");
+                return;
+            }
+        }
+
         var entry = curr();
         if (!entry) return;
+
+        // Check if this entry is actually a nested shift (when selected from sidebar)
+        if (STATE.type === 'dynamiclore') {
+            var findParentRecursive = function(entries, targetId) {
+                for (var i = 0; i < entries.length; i++) {
+                    if (entries[i].shifts) {
+                        for (var j = 0; j < entries[i].shifts.length; j++) {
+                            if (entries[i].shifts[j].id === targetId) return entries[i];
+                            var found = findParentRecursive([entries[i].shifts[j]], targetId);
+                            if (found) return found;
+                        }
+                    }
+                }
+                return null;
+            };
+            
+            var parent = findParentRecursive(STATE.data.dynamiclore, entry.id);
+            
+            if (parent) {
+                // It is a nested shift! Duplicate it as a sibling.
+                var clone = JSON.parse(JSON.stringify(entry));
+                clone.id = id("shift");
+                clone.id_name = (clone.id_name || "shift") + "_copy";
+                
+                // Regenerate IDs for nested shifts of the clone
+                var regenerateIds = function(shifts) {
+                    if (!shifts) return;
+                    shifts.forEach(function(s) {
+                        s.id = id("shift");
+                        if (s.shifts) regenerateIds(s.shifts);
+                    });
+                };
+                regenerateIds(clone.shifts);
+
+                // Insert into parent's shifts
+                var insertIndex = -1;
+                if (parent.shifts) {
+                    for(var k=0; k<parent.shifts.length; k++) {
+                        if (parent.shifts[k].id === entry.id) {
+                            insertIndex = k + 1;
+                            break;
+                        }
+                    }
+                    if (insertIndex > -1) {
+                        parent.shifts.splice(insertIndex, 0, clone);
+                    } else {
+                        parent.shifts.push(clone);
+                    }
+                }
+
+                STATE.entryId = clone.id; // Select the new clone
+                STATE.selectedIds = [clone.id];
+                STATE.lastSelectedId = clone.id;
+                
+                window.switchTab('visual');
+                renderList(true);
+                renderEditor();
+                renderCode();
+                autoSave();
+                window.maybeRefreshGraph();
+                window.showToast("Shift duplicated (sibling)", "success");
+                return;
+            }
+        }
+
+        // Standard Top-Level Duplication
         var clone = JSON.parse(JSON.stringify(entry));
         clone.id = id(STATE.type);
         if (STATE.type === "characters" && clone.key) clone.key = String(clone.key) + "_copy";
         if (STATE.type === "dynamiclore" && clone.id_name) clone.id_name = String(clone.id_name) + "_copy";
+        
+        // Fix: Regenerate shift IDs to prevent linking
+        if (STATE.type === "dynamiclore" && clone.shifts) {
+             var regenerateIds = function(shifts) {
+                 if (!shifts) return;
+                 shifts.forEach(function(s) {
+                     s.id = id("shift");
+                     if (s.shifts) regenerateIds(s.shifts);
+                 });
+             };
+             regenerateIds(clone.shifts);
+        }
+
         STATE.data[STATE.type].push(clone);
         STATE.entryId = clone.id;
         STATE.shiftId = null;
@@ -16687,9 +16818,7 @@ module.exports = __webpack_require__(63);
           '<div class="form-section">' +
           '<div class="section-title">Keyword + Tag Controls</div>' +
           '<div class="form-grid">' +
-          '<div class="form-group">' +
           renderSmartTagInput('entry', 'keywords', 'Keywords', e.keywords, 'fld_keywords', 'Phrases that trigger this entry.') +
-          "</div>" +
           '<div class="form-group">' +
           '<label class="form-label">tag</label>' +
           '<input id="fld_tag" class="form-input" value="' + escHtml(e.tag || "") + '" oninput="save({tag:this.value})">' +
@@ -16699,7 +16828,7 @@ module.exports = __webpack_require__(63);
           '<div class="form-grid">' +
           renderSmartTagInput('entry', 'triggers', 'Triggers', e.triggers, 'fld_triggers', 'Tags to emit when this entry fires.') +
           '<div class="form-group">' +
-          '<label class="form-label">probability</label>' +
+          '<label class="form-label" style="display:flex;justify-content:space-between;align-items:center;">probability</label>' +
           '<input id="fld_probability" class="form-input" value="' + escHtml(e.probability || "") + '" oninput="save({probability:this.value})">' +
           '<div class="form-help">Example: \"40%\" (optional).</div>' +
           "</div>" +
@@ -18223,7 +18352,7 @@ window._finalizeSmartTag = function(input, context, field, keepFocus) {
               if (entry) selectedEntries.push(entry);
             }
             if (selectedEntries.length > 0) {
-              fullPrompt += "\n\nCurrent JSON Entries (array of " + selectedEntries.length + " objects):\n```json\n" + JSON.stringify(selectedEntries, null, 2) + "\n```\n\nTask: Modify ALL entries in the array above based on the user request. Return ONLY a valid JSON array with all modified objects. Maintain each entry's 'id' field.";
+              fullPrompt += "\n\nCurrent JSON Entries (array of " + selectedEntries.length + " objects):\n```json\n" + JSON.stringify(selectedEntries, null, 2) + "\n```\n\nTask: Modify ALL entries in the array above based on the user request. Return ONLY a valid JSON array with all modified objects. Maintain each entry's 'id' field. When modifying text fields, use only 'personality', 'scenario', or 'example_dialogs'. Do NOT use a 'content' field.";
             }
           } else {
             // Single entry edit mode
@@ -18232,7 +18361,7 @@ window._finalizeSmartTag = function(input, context, field, keepFocus) {
               target = findEntry(STATE.shiftId, STATE.data.dynamiclore);
             }
             if (target) {
-              fullPrompt += "\n\nCurrent JSON Entry:\n```json\n" + JSON.stringify(target, null, 2) + "\n```\n\nTask: Modify the JSON object above based on the user request. Return ONLY the valid JSON object. Maintain the 'id' field if possible.";
+              fullPrompt += "\n\nCurrent JSON Entry:\n```json\n" + JSON.stringify(target, null, 2) + "\n```\n\nTask: Modify the JSON object above based on the user request. Return ONLY the valid JSON object. Maintain the 'id' field if possible. When modifying text fields, use only 'personality', 'scenario', or 'example_dialogs'. Do NOT use a 'content' field.";
             }
           }
         } else if (aiGenerationMode === 'entry' || aiGenerationMode === 'shift') {
@@ -18240,9 +18369,9 @@ window._finalizeSmartTag = function(input, context, field, keepFocus) {
             fullPrompt += "\n\nGenerate a single JSON object (or an array of objects) for CHARACTER entries. Do not include ```json markdown.\n\nRequirements:\n1. 'key': lowercase string.\n2. 'gender': 'M', 'F', or 'N'.\n3. 'aliases': array of strings.\n4. 'personality': concise string (max 50 words).";
           } else if (STATE.type === 'pairs' && aiGenerationMode === 'entry') {
             var availableChars = STATE.data.characters.map(function(c){return c.key}).filter(Boolean);
-            fullPrompt += "\n\nGenerate a single JSON object (or an array of objects) for RELATIONSHIP PAIR entries. Do not include ```json markdown.\n\nRequirements:\n1. 'pair': array of 2 character keys. MUST use keys from this list: " + JSON.stringify(availableChars) + ".\n2. 'requireTags': array of strings.\n3. 'injection': concise string (max 50 words).\n4. 'group': optional string.";
-          } else {
-            fullPrompt += "\n\nGenerate a single JSON object (or an array of objects) for DYNAMIC_LORE " + (aiGenerationMode === 'shift' ? "shift" : "entry") + ". The JSON should be compatible with the AURA lorebook format. Do not include ```json markdown.\n\nRequirements:\n1. Set 'priority' to a number between 1 and 10.\n2. Include 'id_name' and 'keywords' (array of trigger phrases).\n3. 'personality' and 'scenario' fields MUST be concise (max 20 words each).\n\nGating Philosophy - USE SIMPLEST LOGICAL GATES:\n• Only add gates when they are ESSENTIAL to the entry's purpose\n• Prefer NO gates over excessive/illogical gates\n• Use 1-2 gates maximum unless truly necessary\n• Available gate types:\n  - Emotion gates: 'andAnyEmotion' or 'notAnyEmotion' (ANGER, JOY, SADNESS, FEAR, ROMANCE, NEUTRAL)\n  - Intent gates: 'andAnyIntent' or 'notAnyIntent' (question, disclosure, command, promise, conflict, smalltalk, meta, narrative)\n  - Eros gates: 'andAnyEros' or 'notAnyEros' (platonic, tension, romance, physical, passion, explicit, conflict, aftercare)\n  - Long-term variants: 'andAnyLongTermEmotion', 'andAnyLongTermEros'\n\nExamples of good gating:\n• Romantic confession dialogue → 'andAnyEmotion': ['ROMANCE']\n• Combat reaction → 'andAnyEmotion': ['ANGER', 'FEAR']\n• Generic flavor text → NO gates needed\n• Question-specific response → 'andAnyIntent': ['question']";
+            fullPrompt += "\n\nGenerate a single JSON object (or an array of objects) for RELATIONSHIP PAIR entries. Do not include ```json markdown.\n\nRequirements:\n1. 'pair': array of 2 character keys. MUST use keys from this list: " + JSON.stringify(availableChars) + ".\n2. 'requireTags': array of strings.\n3. 'scenario': concise string describing the relationship dynamic (max 50 words). Do NOT use 'injection' or 'content'.\n4. 'group': optional string.";
+          } else if (STATE.type === 'dynamiclore' || aiGenerationMode === 'shift') {
+            fullPrompt += "\n\nGenerate a single JSON object (or an array of objects) for DYNAMIC_LORE " + (aiGenerationMode === 'shift' ? "shift" : "entry") + ". The JSON should be compatible with the AURA lorebook format. Do not include ```json markdown.\n\nRequirements:\n1. Set 'priority' to a number between 1 and 10.\n2. Include 'id_name' and 'keywords' (array of trigger phrases).\n3. Use 'personality', 'scenario', or 'example_dialogs' for text content. These fields MUST be concise (max 50 words). Do NOT use a 'content' field.\n\nGating Philosophy - USE SIMPLEST LOGICAL GATES:\n• Only add gates when they are ESSENTIAL to the entry's purpose\n• Prefer NO gates over excessive/illogical gates\n• Use 1-2 gates maximum unless truly necessary\n• Available gate types:\n  - Emotion gates: 'andAnyEmotion' or 'notAnyEmotion' (ANGER, JOY, SADNESS, FEAR, ROMANCE, NEUTRAL)\n  - Intent gates: 'andAnyIntent' or 'notAnyIntent' (question, disclosure, command, promise, conflict, smalltalk, meta, narrative)\n  - Eros gates: 'andAnyEros' or 'notAnyEros' (platonic, tension, romance, physical, passion, explicit, conflict, aftercare)\n  - Long-term variants: 'andAnyLongTermEmotion', 'andAnyLongTermEros'\n\nExamples of good gating:\n• Romantic confession dialogue → 'andAnyEmotion': ['ROMANCE']\n• Combat reaction → 'andAnyEmotion': ['ANGER', 'FEAR']\n• Generic flavor text → NO gates needed\n• Question-specific response → 'andAnyIntent': ['question']";
           }
         }
         }
